@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Math Practice</title>
+    <link rel="stylesheet" href="../css/mentalmath.css">
+    <style>
+        nav {
+            background-color: #1a4b8c;
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #123666;
+        }
+
+        /* Adjust math-container to account for fixed nav */
+        .math-container {
+            margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="../index.html">Home</a>
+        <a href="tools.html">Tools</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact</a>
+    </nav>
+
+    <div class="math-container">
+        <h1>Mental Math Practice</h1>
+        <div class="problem" id="problem"></div>
+        <input type="number" id="answer" placeholder="Your answer">
+        <div class="message" id="message"></div>
+    </div>
+
+    <script src="../js/mentalmath.js"></script>
+</body>
+</html>

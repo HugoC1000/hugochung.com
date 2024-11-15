@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Math Settings</title>
+    <link rel="stylesheet" href="../css/mentalmathsettings.css">
+</head>
+<body>
+    <div class="settings-container">
+        <h2>Mental Math Settings</h2>
+
+        <div class="operation-settings">
+            <h3>Addition</h3>
+            <div class="range-inputs">
+                First number: <input type="number" id="add1min" value="1"> to <input type="number" id="add1max" value="12">
+            </div>
+            <div class="range-inputs">
+                Second number: <input type="number" id="add2min" value="1"> to <input type="number" id="add2max" value="12">
+            </div>
+        </div>
+
+        <div class="operation-settings">
+            <h3>Subtraction</h3>
+            <div class="range-inputs">
+                First number: <input type="number" id="sub1min" value="1"> to <input type="number" id="sub1max" value="12">
+            </div>
+            <div class="range-inputs">
+                Second number: <input type="number" id="sub2min" value="1"> to <input type="number" id="sub2max" value="12">
+            </div>
+        </div>
+
+        <div class="operation-settings">
+            <h3>Multiplication</h3>
+            <div class="range-inputs">
+                First number: <input type="number" id="mul1min" value="1"> to <input type="number" id="mul1max" value="12">
+            </div>
+            <div class="range-inputs">
+                Second number: <input type="number" id="mul2min" value="1"> to <input type="number" id="mul2max" value="12">
+            </div>
+        </div>
+
+        <div class="operation-settings">
+            <h3>Division</h3>
+            <div class="range-inputs">
+                First number: <input type="number" id="div1min" value="1"> to <input type="number" id="div1max" value="12">
+            </div>
+            <div class="range-inputs">
+                Second number: <input type="number" id="div2min" value="1"> to <input type="number" id="div2max" value="12">
+            </div>
+        </div>
+
+        <a href="mentalmath.html" class="go-button" onclick="saveSettings()">Start Practice</a>
+    </div>
+
+    <script>
+    function saveSettings() {
+        const settings = {
+            add: {
+                min1: document.getElementById('add1min').value,
+                max1: document.getElementById('add1max').value,
+                min2: document.getElementById('add2min').value,
+                max2: document.getElementById('add2max').value
+            },
+            sub: {
+                min1: document.getElementById('sub1min').value,
+                max1: document.getElementById('sub1max').value,
+                min2: document.getElementById('sub2min').value,
+                max2: document.getElementById('sub2max').value
+            },
+            mul: {
+                min1: document.getElementById('mul1min').value,
+                max1: document.getElementById('mul1max').value,
+                min2: document.getElementById('mul2min').value,
+                max2: document.getElementById('mul2max').value
+            },
+            div: {
+                min1: document.getElementById('div1min').value,
+                max1: document.getElementById('div1max').value,
+                min2: document.getElementById('div2min').value,
+                max2: document.getElementById('div2max').value
+            }
+        };
+        localStorage.setItem('mathSettings', JSON.stringify(settings));
+    }
+    </script>
+</body>
+</html>

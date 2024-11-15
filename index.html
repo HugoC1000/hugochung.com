@@ -1,100 +1,47 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Portfolio</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #e6f3ff;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 0 20px;
-        }
-
-        header {
-            background: #fff;
-            padding: 2rem 0;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .hero {
-            padding: 4rem 0;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #1a4b8c;
-        }
-
-        .about {
-            background: #fff;
-            padding: 3rem 0;
-        }
-
-        .tools-section {
-            background: #1a4b8c;
-            color: #fff;
-            padding: 2rem 0;
-            text-align: center;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-
-        .tools-section a {
-            color: #fff;
-            text-decoration: none;
-            padding: 10px 20px;
-            border: 2px solid #fff;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .tools-section a:hover {
-            background: #fff;
-            color: #1a4b8c;
-        }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
+    <nav>
         <div class="container">
-            <h1>John Doe</h1>
-            <p>Software Developer</p>
+            <div class="logo">HC</div>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="pages/tools.html">Tools</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
         </div>
-    </header>
+    </nav>
 
     <section class="hero">
         <div class="container">
-            <h1>Welcome to My Portfolio</h1>
-            <p>Creating elegant solutions through code</p>
+            <div class="hero-content">
+                <h1>Hugo Chung</h1>
+                <p class="title">Aspiring CS and AI Student</p>
+                <p class="tagline">Coding is fun :D</p>
+                <a href="pages/tools.html" class="cta-button">Explore My Work</a>
+            </div>
         </div>
     </section>
 
-    <section class="about">
+    <section class="about" id="about">
         <div class="container">
             <h2>About Me</h2>
-            <p>I'm a passionate software developer with expertise in building modern web applications. 
-               I focus on creating clean, efficient, and user-friendly solutions.</p>
+            <p>I'm an aspiring CS student at WPGA, passionate about pushing the boundaries of technology. My interests lie in Artificial Intelligence, Machine Learning, and Web Development.</p>
         </div>
     </section>
 
     <section class="tools-section">
         <div class="container">
             <h2>Tools & Projects</h2>
-            <a href="tools.html">Explore My Tools</a>
+            <a href="pages/tools.html" class="tools-button">View My Tools</a>
         </div>
     </section>
 </body>
