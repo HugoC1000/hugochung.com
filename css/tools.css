@@ -4,12 +4,99 @@ body {
     margin: 0;
     padding: 0;
     background-color: #e6f3ff;
+    --primary-color: #2d3436;
+    --accent-color: #0984e3;
+    --bg-color: #ffffff;
+    --text-color: #2d3436;
+    --secondary-bg: #f5f6fa;
 }
 
 .container {
-    max-width: 1100px;
-    margin: 50px auto;
+    max-width: 1200px;
+    margin: auto;
     padding: 0 20px;
+}
+
+/* Navigation */
+nav {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--accent-color);
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 2.5rem;
+}
+
+nav a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.3s ease;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-right: 10px;
+}
+
+nav a:hover {
+    color: var(--accent-color);
+}
+
+/* For smaller screens */
+@media (max-width: 1000px) {
+    .logo {
+        font-size: 1.2rem;
+        padding-left: 10px;
+    }
+    nav {
+        padding: 1rem 10px; /* Reduce padding to fit smaller screens */
+    }
+
+    nav .container {
+        flex-direction: column; /* Stack the navigation items vertically */
+        gap: 1rem; /* Add spacing between stacked items */
+    }
+
+    nav ul {
+        flex-direction: column; /* Align navigation links vertically */
+        gap: 1rem; /* Spacing between links */
+    }
+
+    nav a {
+        font-size: 0.8rem; /* Reduce font size for smaller screens */
+        text-align: center;
+    }
+}
+
+.tools-container {
+    padding-top: 100px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-left: auto;
+    margin-right: auto;
+    padding: 100px 20px 0;
 }
 
 .tools-grid {
@@ -25,6 +112,7 @@ body {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     text-align: center;
     transition: transform 0.3s ease;
+    margin-left: auto;
 }
 
 .tool-card:hover {

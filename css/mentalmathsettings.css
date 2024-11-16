@@ -4,6 +4,12 @@ body {
     margin: 0;
     padding: 0px;
     background-color: #e6f3ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    --accent-color: #0984e3;
+
 }
 
 .container {

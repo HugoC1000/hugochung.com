@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equation Solver</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            width: 300px;
+            margin: auto;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .result {
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Equation Solver</h2>
+        <label for="equation">Enter Equation (e.g., ax + b = c or b = ax + c):</label>
+        <input type="text" id="equation" placeholder="e.g., 2x + 3 = 7">
+        <button onclick="solveEquation()">Solve Equation</button>
+        <p class="result" id="result"></p>
+    </div>
+
+    <script>
+        function solveEquation() {
+            let equation = document.getElementById('equation').value;
+            let result = document.getElementById('result');
+
+            // Remove all spaces
+            equation = equation.replace(/\s+/g, '');
+
+            // Split the equation into left and right sides
+            let sides = equation.split('=');
+            if (sides.length !== 2) {
+                result.textContent = "Please enter a valid equation in the form ax + b = c.";
+                return;
+            }
+
+            let leftSide = sides[0];
+            let rightSide = sides[1];
+
+            // Function to extract coefficient and constant from a side
+            function parseSide(side) {
+                let coefficient = 0;
+                let constant = 0;
+
+                // Regular expression to match terms like `2x`, `-x`, `x`, `3.5`, `-3.5`, etc.
+                let terms = side.match(/([+-]?\d*\.?\d+x|[+-]?\d*\.?\d+)/g);
+
+                if (terms) {
+                    terms.forEach(term => {
+                        if (term.includes('x')) {
+                            // If the term contains 'x', it's the coefficient of x
+                            let coeff = term.replace('x', '');
+                            coefficient += coeff === '' || coeff === '+' ? 1 :
+                                           coeff === '-' ? -1 :
+                                           parseFloat(coeff);
+                        } else {
+                            // If the term is just a number, it's the constant
+                            constant += parseFloat(term);
+                        }
+                    });
+                }
+
+                return { coefficient, constant };
+            }
+
+            // Parse both sides
+            let left = parseSide(leftSide);
+            let right = parseSide(rightSide);
+
+            // Now solve for x (ax + b = c) ==> x = (c - b) / a
+            let a = left.coefficient - right.coefficient;  // Coefficients of x should be subtracted
+            let b = right.constant - left.constant; // Constants should be moved to the other side
+
+            // Handle when a = 0 (avoid division by zero)
+            if (a === 0) {
+                if (b === 0) {
+                    result.textContent = "Infinite solutions.";
+                } else {
+                    result.textContent = "No solution.";
+                }
+                return;
+            }
+
+            let x = b / a;
+            result.textContent = `Solution: x = ${x}`;
+        }
+    </script>
+
+</body>
+</html>
