@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grade Calculator with Progress Bar</title>
+  <link rel="stylesheet" href="../css/gradeCalculator.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">HC</div>
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../pages/tools.html">Tools</a></li>
+                <li><a href="../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+  <div class="main-container">
+    <!-- Form Section: Grade Inputs -->
+    <div class="form-container">
+      <h1>Grade Calculator</h1>
+      <form id="gradeForm">
+        <div class="grade-input-container">
+            <label for="targetGrade">Target Points (out of 900):</label>
+            <input type="number" id="targetGrade" placeholder="Enter target points" min="0" max="900">
+        </div>
+
+        <div class="grade-input-container">
+            <div class="course-name-container">
+                <label class="course-label" for="apCsp">AP CSP</label>
+                <button type="button" class="edit-name-btn">✎</button>
+                <input type="text" class="course-name-input" style="display: none;">
+            </div>
+            <div class="input-with-confidence">
+                <input type="number" id="apCsp" placeholder="Enter your score">
+                <select class="confidence-select" data-for="apCsp">
+                    <option value="none">None</option>
+                    <option value="unsure">Unsure</option>
+                    <option value="moderate">Moderately sure</option>
+                    <option value="certain">Certain</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grade-input-container">
+            <div class="course-name-container">
+                <label class="course-label" for="math">Math</label>
+                <button type="button" class="edit-name-btn">✎</button>
+                <input type="text" class="course-name-input" style="display: none;">
+            </div>
+            <div class="input-with-confidence">
+                <input type="number" id="math" placeholder="Enter your score">
+                <select class="confidence-select" data-for="math">
+                    <option value="none">None</option>
+                    <option value="unsure">Unsure</option>
+                    <option value="moderate">Moderately sure</option>
+                    <option value="certain">Certain</option>
+                </select>
+            </div>
+        </div>
+        <div class="grade-input-container">
+            <div class="course-name-container">
+                <label class="course-label" for="physics">Physics</label>
+                <button type="button" class="edit-name-btn">✎</button>
+                <input type="text" class="course-name-input" style="display: none;">
+            </div>
+            <div class="input-with-confidence">
+                <input type="number" id="physics" placeholder="Enter your score">
+                <select class="confidence-select" data-for="physics">
+                    <option value="none">None</option>
+                    <option value="unsure">Unsure</option>
+                    <option value="moderate">Moderately sure</option>
+                    <option value="certain">Certain</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grade-input-container">
+            <div class="course-name-container">
+                <label class="course-label" for="socials">Socials</label>
+                <button type="button" class="edit-name-btn">✎</button>
+                <input type="text" class="course-name-input" style="display: none;">
+            </div>
+            <div class="input-with-confidence">
+                <input type="number" id="socials" placeholder="Enter your score">
+                <select class="confidence-select" data-for="socials">
+                    <option value="none">None</option>
+                    <option value="unsure">Unsure</option>
+                    <option value="moderate">Moderately sure</option>
+                    <option value="certain">Certain</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grade-input-container">
+            <div class="course-name-container">
+                <label class="course-label" for="pe">PE</label>
+                <button type="button" class="edit-name-btn">✎</button>
+                <input type="text" class="course-name-input" style="display: none;">
+            </div>
+            <div class="input-with-confidence">
+                <input type="number" id="pe" placeholder="Enter your score">
+                <select class="confidence-select" data-for="pe">
+                    <option value="none">None</option>
+                    <option value="unsure">Unsure</option>
+                    <option value="moderate">Moderately sure</option>
+                    <option value="certain">Certain</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grade-input-container">
+            <div class="course-name-container">
+                <label class="course-label" for="english">English</label>
+                <button type="button" class="edit-name-btn">✎</button>
+                <input type="text" class="course-name-input" style="display: none;">
+            </div>
+            <div class="input-with-confidence">
+                <input type="number" id="english" placeholder="Enter your score">
+                <select class="confidence-select" data-for="english">
+                    <option value="none">None</option>
+                    <option value="unsure">Unsure</option>
+                    <option value="moderate">Moderately sure</option>
+                    <option value="certain">Certain</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grade-input-container">
+            <div class="course-name-container">
+                <label class="course-label" for="chemistry">Chemistry</label>
+                <button type="button" class="edit-name-btn">✎</button>
+                <input type="text" class="course-name-input" style="display: none;">
+            </div>
+            <div class="input-with-confidence">
+                <input type="number" id="chemistry" placeholder="Enter your score">
+                <select class="confidence-select" data-for="chemistry">
+                    <option value="none">None</option>
+                    <option value="unsure">Unsure</option>
+                    <option value="moderate">Moderately sure</option>
+                    <option value="certain">Certain</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grade-input-container">
+            <div class="course-name-container">
+                <label class="course-label" for="career">Career Life Education</label>
+                <button type="button" class="edit-name-btn">✎</button>
+                <input type="text" class="course-name-input" style="display: none;">
+            </div>
+            <div class="input-with-confidence">
+                <input type="number" id="career" placeholder="Enter your score">
+                <select class="confidence-select" data-for="career">
+                    <option value="none">None</option>
+                    <option value="unsure">Unsure</option>
+                    <option value="moderate">Moderately sure</option>
+                    <option value="certain">Certain</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grade-input-container">
+            <div class="course-name-container">
+                <label class="course-label" for="apStats">AP Stats</label>
+                <button type="button" class="edit-name-btn">✎</button>
+                <input type="text" class="course-name-input" style="display: none;">
+            </div>
+            <div class="input-with-confidence">
+                <input type="number" id="apStats" placeholder="Enter your score">
+                <select class="confidence-select" data-for="apStats">
+                    <option value="none">None</option>
+                    <option value="unsure">Unsure</option>
+                    <option value="moderate">Moderately sure</option>
+                    <option value="certain">Certain</option>
+                </select>
+            </div>
+        </div>
+
+
+      </form>
+    </div>
+
+    <!-- Result Section -->
+    <div class="result-container">
+      <h2>Results</h2>
+      <div class="output" id="output">Your result will appear here.</div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar-container">
+      <div class="progress-bar-background">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="threshold-marker" id="thresholdMarker"></div>
+      </div>
+    </div>
+  </div>
+  <script src="../js/gradeCalculation.js"></script>
+</body>
+</html>
