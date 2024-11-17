@@ -98,11 +98,12 @@ nav a:hover {
     margin-right: auto;
     padding: 100px 20px 0;
 }
-
 .tools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .tool-card {
@@ -112,7 +113,7 @@ nav a:hover {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     text-align: center;
     transition: transform 0.3s ease;
-    margin-left: auto;
+    margin: 0 auto; /* Changed from margin-left: auto to center the card */
 }
 
 .tool-card:hover {
