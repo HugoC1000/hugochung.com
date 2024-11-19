@@ -23,6 +23,42 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+        // Add event listeners for course name editing
+     const editButtons = document.querySelectorAll('.edit-name-btn');
+        editButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const container = e.target.closest('.course-name-container');
+                const label = container.querySelector('.course-label');
+                const input = container.querySelector('.course-name-input');
+                
+                if (input.style.display === 'none') {
+                    // Switch to edit mode
+                    input.value = label.textContent;
+                    label.style.display = 'none';
+                    input.style.display = 'inline-block';
+                    e.target.textContent = '✓';
+                    input.focus();
+                } else {
+                    // Save the edit
+                    label.textContent = input.value;
+                    label.style.display = 'inline-block';
+                    input.style.display = 'none';
+                    e.target.textContent = '✎';
+                }
+            });
+        });
+        // Add event listener for Enter key on course name inputs
+        const courseNameInputs = document.querySelectorAll('.course-name-input');
+        courseNameInputs.forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const container = e.target.closest('.course-name-container');
+                    const button = container.querySelector('.edit-name-btn');
+                    button.click();
+                }
+            });
+        });
+
 
     document.getElementById("targetGrade").addEventListener("input", (e) => {
         goal = e.target.value || 0;
@@ -155,6 +191,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         // Adjust text color for readability
-        input.style.color = value >= 60 && value > 75 ? 'black' : 'white';
+        input.style.color = value >= 60 && value <= 75 ? 'white' : 'black';
     }
 });
