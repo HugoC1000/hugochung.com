@@ -215,13 +215,23 @@ button:hover {
     height: 100%;
     border-radius: 10px;
     position: relative;
+    overflow: hidden;
 }
 
-.progress-bar {
+.progress-bar-min {
     width: 100%;
-    background-color: #76c7c0;
+    background-color: #51cf66;
     position: absolute;
     bottom: 0;
+    transition: height 0.3s ease;
+}
+
+.progress-bar-max {
+    width: 100%;
+    background-color: #ffd93d;
+    position: absolute;
+    bottom: 0;
+    transition: height 0.3s ease;
 }
 
 .threshold-marker {
@@ -267,6 +277,34 @@ button:hover {
     font-size: 14px;
     min-width: 100px;
 }
+
+/* Min/Max Input Styles */
+.input-with-confidence input.score-min,
+.input-with-confidence input.score-max {
+    width: calc(50% - 10px);
+    margin: 5px 5px 0 0;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Score Ranges */
+.low-score {
+    background-color: #ffcccc;
+    border-color: #e74c3c;
+}
+
+.medium-score {
+    background-color: #fff6cc;
+    border-color: #f1c40f;
+}
+
+.high-score {
+    background-color: #ccffcc;
+    border-color: #27ae60;
+}
+
 
 /* Confidence level background colors - applied to select instead of input */
 select[value="unsure"],
@@ -324,4 +362,39 @@ option[value="certain"],
 .course-label {
     margin: 0;
     flex: 1;
+}
+
+/* Update/add these styles */
+.min-max-inputs {
+    display: flex;
+    gap: 10px;
+    flex: 3;
+}
+
+.grade-input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 2px solid;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.min-input {
+    border-color: #ff6b6b;
+}
+
+.max-input {
+    border-color: #51cf66;
+}
+
+.input-with-confidence {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.confidence-select {
+    flex: 0 0 100px;
 }

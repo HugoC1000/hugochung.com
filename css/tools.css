@@ -63,29 +63,28 @@ nav a {
 nav a:hover {
     color: var(--accent-color);
 }
-
-/* For smaller screens */
 @media (max-width: 1000px) {
     .logo {
         font-size: 1.2rem;
         padding-left: 10px;
     }
     nav {
-        padding: 1rem 10px; /* Reduce padding to fit smaller screens */
+        padding: 0.5rem 5px;
     }
 
     nav .container {
-        flex-direction: column; /* Stack the navigation items vertically */
-        gap: 1rem; /* Add spacing between stacked items */
+        flex-direction: row;
+        gap: 0.6rem;
+        justify-content: start;
     }
 
     nav ul {
-        flex-direction: column; /* Align navigation links vertically */
-        gap: 1rem; /* Spacing between links */
+        flex-direction: row;
+        gap: 0.5rem;
     }
 
     nav a {
-        font-size: 0.8rem; /* Reduce font size for smaller screens */
+        font-size: 0.6rem;
         text-align: center;
     }
 }

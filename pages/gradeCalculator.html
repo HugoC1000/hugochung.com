@@ -27,6 +27,7 @@
             <input type="number" id="targetGrade" placeholder="Enter target points" min="0" max="900">
         </div>
 
+
         <div class="grade-input-container">
             <div class="course-name-container">
                 <label class="course-label" for="apCsp">AP CSP</label>
@@ -34,7 +35,10 @@
                 <input type="text" class="course-name-input" style="display: none;">
             </div>
             <div class="input-with-confidence">
-                <input type="number" id="apCsp" placeholder="Enter your score">
+                <div class="min-max-inputs">
+                    <input type="number" id="apCsp-min" class="grade-input min-input" placeholder="Min score">
+                    <input type="number" id="apCsp-max" class="grade-input max-input" placeholder="Max score">
+                </div>
                 <select class="confidence-select" data-for="apCsp">
                     <option value="none">None</option>
                     <option value="unsure">Unsure</option>
@@ -43,6 +47,8 @@
                 </select>
             </div>
         </div>
+        
+
 
         <div class="grade-input-container">
             <div class="course-name-container">
@@ -51,7 +57,10 @@
                 <input type="text" class="course-name-input" style="display: none;">
             </div>
             <div class="input-with-confidence">
-                <input type="number" id="math" placeholder="Enter your score">
+                <div class="min-max-inputs">
+                    <input type="number" id="math-min" class="grade-input min-input" placeholder="Min score">
+                    <input type="number" id="math-max" class="grade-input max-input" placeholder="Max score">
+                </div>
                 <select class="confidence-select" data-for="math">
                     <option value="none">None</option>
                     <option value="unsure">Unsure</option>
@@ -67,7 +76,10 @@
                 <input type="text" class="course-name-input" style="display: none;">
             </div>
             <div class="input-with-confidence">
-                <input type="number" id="physics" placeholder="Enter your score">
+                <div class="min-max-inputs">
+                    <input type="number" id="physics-min" class="grade-input min-input" placeholder="Min score">
+                    <input type="number" id="physics-max" class="grade-input max-input" placeholder="Max score">
+                </div>
                 <select class="confidence-select" data-for="physics">
                     <option value="none">None</option>
                     <option value="unsure">Unsure</option>
@@ -84,7 +96,10 @@
                 <input type="text" class="course-name-input" style="display: none;">
             </div>
             <div class="input-with-confidence">
-                <input type="number" id="socials" placeholder="Enter your score">
+                <div class="min-max-inputs">
+                    <input type="number" id="socials-min" class="grade-input min-input" placeholder="Min score">
+                    <input type="number" id="socials-max" class="grade-input max-input" placeholder="Max score">
+                </div>
                 <select class="confidence-select" data-for="socials">
                     <option value="none">None</option>
                     <option value="unsure">Unsure</option>
@@ -101,7 +116,10 @@
                 <input type="text" class="course-name-input" style="display: none;">
             </div>
             <div class="input-with-confidence">
-                <input type="number" id="pe" placeholder="Enter your score">
+                <div class="min-max-inputs">
+                    <input type="number" id="pe-min" class="grade-input min-input" placeholder="Min score">
+                    <input type="number" id="pe-max" class="grade-input max-input" placeholder="Max score">
+                </div>
                 <select class="confidence-select" data-for="pe">
                     <option value="none">None</option>
                     <option value="unsure">Unsure</option>
@@ -118,7 +136,10 @@
                 <input type="text" class="course-name-input" style="display: none;">
             </div>
             <div class="input-with-confidence">
-                <input type="number" id="english" placeholder="Enter your score">
+                <div class="min-max-inputs">
+                    <input type="number" id="english-min" class="grade-input min-input" placeholder="Min score">
+                    <input type="number" id="english-max" class="grade-input max-input" placeholder="Max score">
+                </div>
                 <select class="confidence-select" data-for="english">
                     <option value="none">None</option>
                     <option value="unsure">Unsure</option>
@@ -135,7 +156,10 @@
                 <input type="text" class="course-name-input" style="display: none;">
             </div>
             <div class="input-with-confidence">
-                <input type="number" id="chemistry" placeholder="Enter your score">
+                <div class="min-max-inputs">
+                    <input type="number" id="chemistry-min" class="grade-input min-input" placeholder="Min score">
+                    <input type="number" id="chemistry-max" class="grade-input max-input" placeholder="Max score">
+                </div>
                 <select class="confidence-select" data-for="chemistry">
                     <option value="none">None</option>
                     <option value="unsure">Unsure</option>
@@ -152,7 +176,10 @@
                 <input type="text" class="course-name-input" style="display: none;">
             </div>
             <div class="input-with-confidence">
-                <input type="number" id="career" placeholder="Enter your score">
+                <div class="min-max-inputs">
+                    <input type="number" id="career-min" class="grade-input min-input" placeholder="Min score">
+                    <input type="number" id="career-max" class="grade-input max-input" placeholder="Max score">
+                </div>
                 <select class="confidence-select" data-for="career">
                     <option value="none">None</option>
                     <option value="unsure">Unsure</option>
@@ -169,7 +196,10 @@
                 <input type="text" class="course-name-input" style="display: none;">
             </div>
             <div class="input-with-confidence">
-                <input type="number" id="apStats" placeholder="Enter your score">
+                <div class="min-max-inputs">
+                    <input type="number" id="apStats-min" class="grade-input min-input" placeholder="Min score">
+                    <input type="number" id="apStats-max" class="grade-input max-input" placeholder="Max score">
+                </div>
                 <select class="confidence-select" data-for="apStats">
                     <option value="none">None</option>
                     <option value="unsure">Unsure</option>
@@ -191,10 +221,11 @@
 
     <!-- Progress Bar -->
     <div class="progress-bar-container">
-      <div class="progress-bar-background">
-        <div class="progress-bar" id="progressBar"></div>
-        <div class="threshold-marker" id="thresholdMarker"></div>
-      </div>
+        <div class="progress-bar-background">
+            <div class="progress-bar-max" id="progressBarMax"></div>
+            <div class="progress-bar-min" id="progressBarMin"></div>
+            <div class="threshold-marker" id="thresholdMarker"></div>
+        </div>
     </div>
   </div>
   <script src="../js/gradeCalculation.js"></script>

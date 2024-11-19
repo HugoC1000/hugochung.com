@@ -1,135 +1,138 @@
 document.addEventListener("DOMContentLoaded", () => {
     const subjects = [
-      "apCsp", "math", "physics", "socials", 
-      "pe", "english", "chemistry", "career", "apStats"
+        "apCsp",
+        "math", "physics", "socials", 
+        "pe", "english", "chemistry", "career", "apStats"
     ];
-  
+
+
     let goal = document.getElementById("targetGrade").value || 0; 
     const maxPoints = 900;
-  
-    // Attach event listeners to all input fields
+
+    // Update event listeners for min/max inputs
     subjects.forEach(subject => {
-      const inputField = document.getElementById(subject);
-      inputField.addEventListener("input", updateResults);
+        const minInput = document.getElementById(`${subject}-min`);
+        const maxInput = document.getElementById(`${subject}-max`);
+
+        [minInput, maxInput].forEach(input => {
+            input.addEventListener("input", (e) => {
+                validateMinMaxInputs(subject);
+                updateGradeColor(e.target);
+                updateResults();
+            });
+        });
     });
 
-    // Update goal when target grade changes
+
     document.getElementById("targetGrade").addEventListener("input", (e) => {
         goal = e.target.value || 0;
         updateResults();
     });
   
-    // Add event listeners for confidence selects
-    const confidenceSelects = document.querySelectorAll('.confidence-select');
-    confidenceSelects.forEach(select => {
-        select.addEventListener('change', (e) => {
-            // Remove existing classes from the select itself
-            e.target.classList.remove('confidence-unsure', 'confidence-moderate', 'confidence-certain');
-            
-            // Add new confidence class to the select
-            e.target.classList.add(`confidence-${e.target.value}`);
-            
-            // Set the background color directly
-            e.target.style.backgroundColor = 
-                e.target.value === 'unsure' ? '#eb3737' :
-                e.target.value === 'moderate' ? '#e39d53' : 
-                e.target.value === 'certain' ? '#38ed38' : '';
-        });
-    });
-  
-    // Add event listeners to grade inputs for gradient colors
-    subjects.forEach(subject => {
-        const inputField = document.getElementById(subject);
-        inputField.addEventListener("input", (e) => {
-            updateGradeColor(e.target);
-            updateResults();
-        });
-    });
-  
-    // Add event listeners for course name editing
-    const editButtons = document.querySelectorAll('.edit-name-btn');
-    editButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            const container = e.target.closest('.course-name-container');
-            const label = container.querySelector('.course-label');
-            const input = container.querySelector('.course-name-input');
-            
-            if (input.style.display === 'none') {
-                // Switch to edit mode
-                input.value = label.textContent;
-                label.style.display = 'none';
-                input.style.display = 'inline-block';
-                e.target.textContent = '✓';
-                input.focus();
-            } else {
-                // Save the edit
-                label.textContent = input.value;
-                label.style.display = 'inline-block';
-                input.style.display = 'none';
-                e.target.textContent = '✎';
-            }
-        });
-    });
 
-    // Add event listener for Enter key on course name inputs
-    const courseNameInputs = document.querySelectorAll('.course-name-input');
-    courseNameInputs.forEach(input => {
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const container = e.target.closest('.course-name-container');
-                const button = container.querySelector('.edit-name-btn');
-                button.click();
-            }
-        });
-    });
-  
-    // Function to calculate and display the results
+    function validateMinMaxInputs(subject) {
+        const minInput = document.getElementById(`${subject}-min`);
+        const maxInput = document.getElementById(`${subject}-max`);
+        
+        const min = parseFloat(minInput.value) || 0;
+        const max = parseFloat(maxInput.value) || 0;
+        
+    }
+
+     // Add event listeners for confidence selects
+     const confidenceSelects = document.querySelectorAll('.confidence-select');
+     confidenceSelects.forEach(select => {
+         select.addEventListener('change', (e) => {
+             // Remove existing classes from the select itself
+             e.target.classList.remove('confidence-unsure', 'confidence-moderate', 'confidence-certain');
+             
+             // Add new confidence class to the select
+             e.target.classList.add(`confidence-${e.target.value}`);
+             
+             // Set the background color directly
+             e.target.style.backgroundColor = 
+                 e.target.value === 'unsure' ? '#eb3737' :
+                 e.target.value === 'moderate' ? '#e39d53' : 
+                 e.target.value === 'certain' ? '#38ed38' : '';
+         });
+     });
     function updateResults() {
-        let totalScore = 0;
-        let allFieldsFilled = true;
+        let minTotal = 0;
+        let maxTotal = 0;
     
         for (const subject of subjects) {
-            const value = document.getElementById(subject).value;
-            const numericValue = parseFloat(value);
+            const minInput = document.getElementById(`${subject}-min`);
+            const maxInput = document.getElementById(`${subject}-max`);
+            const confidence = document.querySelector(`.confidence-select[data-for="${subject}"]`).value;
+            
+            const minValue = parseFloat(minInput.value) || 0;
+            const maxValue = parseFloat(maxInput.value) || 0;
     
-            if (value === "" || isNaN(numericValue) || numericValue < 0 || numericValue > 100) {
-                totalScore += 0;
-                const inputField = document.getElementById(subject);
-                inputField.style.background = 'rgb(255, 0, 0)';
-                inputField.style.color = 'white';
-            } else {
-                totalScore += numericValue;
+            if (minValue >= 0 && maxValue <= 100) {
+                switch(confidence) {
+                    case 'certain':
+                        minTotal += maxValue;
+                        maxTotal += maxValue;
+                        break;
+                    case 'moderate':
+                        minTotal += minValue;
+                        maxTotal += maxValue;
+                        break;
+                    case 'unsure':
+                        minTotal += Math.max(0, minValue - 5);
+                        maxTotal += Math.min(100, maxValue + 5);
+                        break;
+                    default:
+                        minTotal += minValue;
+                        maxTotal += maxValue;
+                }
             }
         }
     
-        const averagePercentage = ((totalScore / maxPoints) * 100).toFixed(2);
-        const outputText = `${totalScore}/${maxPoints} = ${averagePercentage}%`;
+        const minPercentage = ((minTotal / maxPoints) * 100).toFixed(2);
+        const maxPercentage = ((maxTotal / maxPoints) * 100).toFixed(2);
+        const goal = parseFloat(document.getElementById("targetGrade").value) || 0;
+        const targetPercentage = ((goal / maxPoints) * 100).toFixed(2);
     
         const outputElement = document.getElementById("output");
-        const targetGradeAverage = ((goal / maxPoints) * 100).toFixed(2);
-        outputElement.innerHTML = `<p>${outputText}</p>`;
+        outputElement.innerHTML = `
+            <p>Minimum: ${minTotal}/${maxPoints} (${minPercentage}%)</p>
+            <p>Maximum: ${maxTotal}/${maxPoints} (${maxPercentage}%)</p>
+            <p>Target: ${goal}/${maxPoints} (${targetPercentage}%)</p>
+        `;
     
-        if (totalScore >= goal) {
-            outputElement.innerHTML += `<p class="success">Congratulations! You met the goal of ${goal} points (${targetGradeAverage}%)!</p>`;
+        if (minTotal >= goal) {
+            outputElement.innerHTML += `<p class="success">You'll definitely meet your goal!</p>`;
+        } else if (maxTotal >= goal) {
+            outputElement.innerHTML += `<p class="moderate">You might meet your goal.</p>`;
         } else {
-            outputElement.innerHTML += `<p class="fail">You scored below the goal of ${goal} points (${targetGradeAverage}%). Keep trying!</p>`;
+            outputElement.innerHTML += `<p class="fail">You're unlikely to meet your goal with current grades.</p>`;
         }
     
-        updateProgressBar(totalScore);
+        // Fix: Call updateProgressBar instead of updateProgressBars
+        updateProgressBar(minTotal, maxTotal); // Update progress bar with minimum total
     }
-  
+
     // Function to update the progress bar
-    function updateProgressBar(totalScore) {
-      const progressBar = document.getElementById("progressBar");
-      const progressBarHeight = (totalScore / maxPoints) * 100;  
-      progressBar.style.height = `${progressBarHeight}%`;
-  
-      // Update the threshold marker position
-      const thresholdMarker = document.getElementById("thresholdMarker");
-      const thresholdPosition = (goal / maxPoints) * 100; 
-      thresholdMarker.style.bottom = `${thresholdPosition}%`;
+    function updateProgressBar(minTotal, maxTotal) {
+        const progressBarMin = document.getElementById("progressBarMin");
+        const progressBarMax = document.getElementById("progressBarMax");
+        const thresholdMarker = document.getElementById("thresholdMarker");
+        
+        // Calculate percentages (capped at 100%)
+        const minHeight = Math.min(100, (minTotal / maxPoints) * 100);
+        const maxHeight = Math.min(100, (maxTotal / maxPoints) * 100);
+        
+        // Update the bars
+        progressBarMin.style.height = `${minHeight}%`;
+        progressBarMax.style.height = `${maxHeight}%`;
+        
+        // Update threshold marker
+        const goal = parseFloat(document.getElementById("targetGrade").value) || 0;
+        const thresholdPosition = Math.min(100, (goal / maxPoints) * 100);
+        thresholdMarker.style.bottom = `${thresholdPosition}%`;
     }
-  
+    
     // Function to update input background color based on grade
     function updateGradeColor(input) {
         const value = parseFloat(input.value);
@@ -154,4 +157,4 @@ document.addEventListener("DOMContentLoaded", () => {
         // Adjust text color for readability
         input.style.color = value >= 60 && value > 75 ? 'black' : 'white';
     }
-  });
+});
