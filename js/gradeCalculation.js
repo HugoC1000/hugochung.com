@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
 
 
-    let goal = document.getElementById("targetGrade").value || 0; 
+    let goal = document.getElementById("targetGrade").value/100*900 || 0; 
     const maxPoints = 900;
 
     // Update event listeners for min/max inputs
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     document.getElementById("targetGrade").addEventListener("input", (e) => {
-        goal = e.target.value || 0;
+        goal = e.target.value/100*900 || 0;
         updateResults();
     });
   
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
         const minPercentage = ((minTotal / maxPoints) * 100).toFixed(2);
         const maxPercentage = ((maxTotal / maxPoints) * 100).toFixed(2);
-        const goal = parseFloat(document.getElementById("targetGrade").value) || 0;
+        const goal = parseFloat(document.getElementById("targetGrade").value)/100*900 || 0;
         const targetPercentage = ((goal / maxPoints) * 100).toFixed(2);
     
         const outputElement = document.getElementById("output");
