@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         progressBarMax.style.height = `${maxHeight}%`;
         
         // Update threshold marker
-        const goal = parseFloat(document.getElementById("targetGrade").value) || 0;
+        const goal = parseFloat(document.getElementById("targetGrade").value)/100*900 || 0;
         const thresholdPosition = Math.min(100, (goal / maxPoints) * 100);
         thresholdMarker.style.bottom = `${thresholdPosition}%`;
     }
