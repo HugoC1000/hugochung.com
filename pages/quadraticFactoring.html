@@ -4,20 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quadratic Factoring Practice</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../css/quadraticFactoring.css">
 </head>
 <body>
-  <div id="app">
+  <nav>
+    <div class="container">
+        <div class="logo">HC</div>
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../pages/tools.html">Tools</a></li>
+            <li><a href="../index.html#contact">Contact</a></li>
+        </ul>
+    </div>
+</nav>
+
+  <div class="math-container">
     <h1>Practice Factoring Quadratics</h1>
     <div id="question-container">
-      <p id="question">Factor: <span id="quadratic"></span></p>
+      <div class="stopwatch">
+        <span id="minutes">00</span>:<span id="seconds">00</span>
+    </div>
+     <div id="questions-solved">Questions Solved: 0</div>
+
+      <p class="problem">Factor: <span id="quadratic"></span></p>
       <form id="answer-form">
-        <input type="text" id="user-answer" placeholder="Enter your factors">
-        <button type="submit">Check</button>
+        <input type="text" id="userAnswer" placeholder="Your answer">
       </form>
       <p id="feedback"></p>
     </div>
-    <button id="new-question">New Question</button>
   </div>
   <script src="../js/quadraticFactoring.js"></script>
 </body>
