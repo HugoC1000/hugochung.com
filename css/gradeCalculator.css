@@ -398,3 +398,118 @@ option[value="certain"],
 .confidence-select {
     flex: 0 0 100px;
 }
+
+/* Timer and Counter Styles */
+.timer-counter-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.timer-section, .counter-section {
+    flex: 1;
+    text-align: center;
+}
+
+h3 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.stopwatch {
+    font-size: 1.8rem;
+    font-family: monospace;
+    color: #007BFF;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.timer-controls {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+
+.timer-btn, .counter-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    background: #007BFF;
+    color: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+    width: auto;
+    margin: 0;
+}
+
+.timer-btn:hover, .counter-btn:hover {
+    background: #0056b3;
+}
+
+.problem-counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+#problemCount {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #007BFF;
+    min-width: 60px;
+}
+
+.counter-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.counter-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background: #007BFF;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    width: auto;
+}
+
+.reset-btn {
+    background: #dc3545;  /* Red color for reset button */
+}
+
+.reset-btn:hover {
+    background: #c82333;
+}
+
+/* Add keyboard shortcut hint */
+.counter-btn::after {
+    content: " (Space)";
+    font-size: 0.8em;
+    opacity: 0.7;
+}
+
+.reset-btn::after {
+    content: " (R)";
+    font-size: 0.8em;
+    opacity: 0.7;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .timer-counter-container {
+        flex-direction: column;
+    }
+}

@@ -18,6 +18,24 @@ if (savedSettings) {
     settings = JSON.parse(savedSettings);
 }
 
+let timer; // Variable to hold the timer
+let secondsElapsed = 0; // Variable to track elapsed seconds
+let questionsSolved = 0; // Variable to count the number of questions solved
+
+function startStopwatch() {
+    timer = setInterval(() => {
+        secondsElapsed++;
+        updateStopwatchDisplay();
+    }, 1000); // Update every second
+}
+
+function updateStopwatchDisplay() {
+    const minutes = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+    const seconds = String(secondsElapsed % 60).padStart(2, '0');
+    document.getElementById('minutes').textContent = minutes;
+    document.getElementById('seconds').textContent = seconds;
+}
+
 function generateProblem() {
     operator = operators[Math.floor(Math.random() * operators.length)];
     
@@ -45,8 +63,8 @@ function generateProblem() {
     }
 
     problemElement.textContent = `${num1} ${operator} ${num2} = `;
-    answerInput.value = '';
     messageElement.textContent = '';
+    answerInput.value = '';
     answerInput.focus();
 }
 
@@ -55,6 +73,8 @@ answerInput.addEventListener('input', function() {
     
     if (!isNaN(userAnswer)) {
         if (userAnswer === correctAnswer) {
+            questionsSolved++; // Increment the counter
+            document.getElementById('problem-solved').textContent = `Questions Solved: ${questionsSolved}`; // Update the display
             generateProblem();
         } else {
             messageElement.textContent = 'Wrong';
@@ -65,3 +85,6 @@ answerInput.addEventListener('input', function() {
 
 // Generate first problem when page loads
 generateProblem();
+
+// Call startStopwatch when the page loads
+startStopwatch();
