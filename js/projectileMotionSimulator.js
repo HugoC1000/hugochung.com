@@ -500,15 +500,11 @@ function simulateTrajectory() {
         const finalVy = vy - GRAVITY * timeOfFlight;
         const finalVelocity = Math.sqrt(finalVx * finalVx + finalVy * finalVy);
     
-        // Vertical distance traveled
-        const verticalDistance = maxHeight + height;
-    
         // Update results in the DOM
         document.getElementById('finalVelocity').textContent = finalVelocity.toFixed(2);
         document.getElementById('finalVelocityX').textContent = finalVx.toFixed(2);
         document.getElementById('finalVelocityY').textContent = finalVy.toFixed(2);
         document.getElementById('horizontalDistance').textContent = horizontalDistance.toFixed(2);
-        document.getElementById('verticalDistance').textContent = verticalDistance.toFixed(2);
         document.getElementById('timeOfFlight').textContent = timeOfFlight.toFixed(2);
         document.getElementById('maxHeight').textContent = maxHeight.toFixed(2);
     }
