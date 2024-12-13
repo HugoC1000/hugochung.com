@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateStopwatchDisplay();
     }, 1000);
   }
+  //4
 
   function updateStopwatchDisplay() {
     const minutes = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
