@@ -293,9 +293,10 @@ function simulateTrajectory() {
 
         //Once simulation finishes. 
         if (canvas.height - 20 - (y * 20) >= canvas.height-20) {
+            const actualTime = (vy + Math.sqrt(vy * vy + 2 * GRAVITY * height)) / GRAVITY
             trajectoryPoints.push({
-                x: ballCenterX,
-                y: ballBottomY,
+                x: (xPos + vx * actualTime) * 20 ,
+                y: canvas.height - 20,
                 time: t
             });
 
@@ -389,11 +390,37 @@ function simulateTrajectory() {
         const x = xStart + vx * time;
         const y = height + vy * time - 0.5 * GRAVITY * time * time;
 
+
+
         // Update ball position
         ball.set({
             left: x * 20 - 10,
             top: canvas.height - 20 - Math.max(0, y) * 20 // Ensure it doesn't go below ground
         });
+
+
+        const ballCenterX = ball.left + ball.radius;
+        const ballBottomY = ball.top;
+
+        //Update the velocity vectors
+         
+        const currentVx = vx;
+        const currentVy = vy - GRAVITY * time;
+
+        xVelocityArrow.set({
+            x1: ballCenterX,
+            y1: ballBottomY,
+            x2: ballCenterX + currentVx * 5,
+            y2: ballBottomY
+        });
+
+        yVelocityArrow.set({
+            x1: ballCenterX,
+            y1: ballBottomY,
+            x2: ballCenterX,
+            y2: ballBottomY - currentVy * 5
+        });
+
 
         // Update the time display
         timeSliderValue.textContent = `${time.toFixed(2)} s`;
