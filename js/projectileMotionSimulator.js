@@ -371,7 +371,7 @@ function simulateTrajectory() {
             left: (startX + endX) / 2,
             top: groundY - 30,
             fill: 'black',
-            fontSize: 12,
+            fontSize: 10,
             originX: 'center'
         });
         canvas.add(distanceText);
@@ -455,7 +455,7 @@ function simulateTrajectory() {
             left: maxHeightPointX + 10,
             top: (startY + endY) / 2,
             fill: 'black',
-            fontSize: 12,
+            fontSize: 10,
             originX: 'left'
         });
     
@@ -466,7 +466,7 @@ function simulateTrajectory() {
                 left: maxHeightPointX,
                 top: maxHeightPointY - 15,
                 fill: 'black',
-                fontSize: 12,
+                fontSize: 10,
                 originX: 'center',
                 originY: 'bottom'
             }
