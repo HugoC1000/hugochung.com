@@ -125,14 +125,14 @@ function updateVisualization() {
     const vx = velocity * Math.cos(radAngle);
     const vy = velocity * Math.sin(radAngle);
 
-    console.log("Visualization Update Inputs:");
-    console.log("Velocity:", velocity);
-    console.log("Angle:", angle);
-    console.log("Height:", height);
-    console.log("X Position:", xPos);
-    console.log("Radian Angle:", radAngle);
-    console.log("Velocity X:", vx);
-    console.log("Velocity Y:", vy);
+    // console.log("Visualization Update Inputs:");
+    // console.log("Velocity:", velocity);
+    // console.log("Angle:", angle);
+    // console.log("Height:", height);
+    // console.log("X Position:", xPos);
+    // console.log("Radian Angle:", radAngle);
+    // console.log("Velocity X:", vx);
+    // console.log("Velocity Y:", vy);
 
     // Update ball position
     ball.set({
@@ -145,19 +145,19 @@ function updateVisualization() {
     const ballCenterX = ball.left + ball.radius;
     const ballBottomY = ball.top;
 
-    console.log("Ball Center X:", ballCenterX);
-    console.log("Ball Bottom Y:", ballBottomY);
+    // console.log("Ball Center X:", ballCenterX);
+    // console.log("Ball Bottom Y:", ballBottomY);
 
     // Update Angle Arrow
     const arrowLength = 10;
     const endX = ballCenterX + arrowLength * Math.cos(radAngle);
     const endY = ballBottomY - arrowLength * Math.sin(radAngle);
     
-    console.log("Angle Arrow Calculation:");
-    console.log("Start X:", ballCenterX);
-    console.log("Start Y:", ballBottomY);
-    console.log("End X:", endX);
-    console.log("End Y:", endY);
+    // console.log("Angle Arrow Calculation:");
+    // console.log("Start X:", ballCenterX);
+    // console.log("Start Y:", ballBottomY);
+    // console.log("End X:", endX);
+    // console.log("End Y:", endY);
 
     angleArrow.set({
         x1: ballCenterX,
@@ -171,11 +171,11 @@ function updateVisualization() {
     const vArrowEndX = ballCenterX + velocityArrowLength * Math.cos(radAngle);
     const vArrowEndY = ballBottomY - velocityArrowLength * Math.sin(radAngle);
     
-    console.log("Velocity Arrow Calculation:");
-    console.log("Start X:", ballCenterX);
-    console.log("Start Y:", ballBottomY);
-    console.log("End X:", vArrowEndX);
-    console.log("End Y:", vArrowEndY);
+    // console.log("Velocity Arrow Calculation:");
+    // console.log("Start X:", ballCenterX);
+    // console.log("Start Y:", ballBottomY);
+    // console.log("End X:", vArrowEndX);
+    // console.log("End Y:", vArrowEndY);
 
     velocityArrow.set({
         x1: ballCenterX,
@@ -294,10 +294,16 @@ function simulateTrajectory() {
         //Once simulation finishes. 
         if (canvas.height - 20 - (y * 20) >= canvas.height-20) {
             const actualTime = (vy + Math.sqrt(vy * vy + 2 * GRAVITY * height)) / GRAVITY
+            t = actualTime;
             trajectoryPoints.push({
                 x: (xPos + vx * actualTime) * 20 ,
                 y: canvas.height - 20,
                 time: t
+            });
+
+            ball.set({
+                left: x * 20 - 10,
+                top: canvas.height - 20
             });
 
             const trajectoryPath = new fabric.Polyline(trajectoryPoints, {
@@ -314,7 +320,8 @@ function simulateTrajectory() {
                 Number(xPosSlider.value)
             );
             enableTimeSlider(xPos, vx, vy, height, radAngle, t);
-            drawHorizontalDistanceVisualization(xPos, vx, t); 
+            const horizontalDistance = calculateHorizontalDistance(vx, radAngle, t);
+            drawHorizontalDistanceVisualization(xPos, horizontalDistance); 
             cancelAnimationFrame(animationFrame);
             calculateTrajectoryResults(velocity, angle, height, xPos);
             return;
@@ -322,7 +329,6 @@ function simulateTrajectory() {
 
         animationFrame = requestAnimationFrame(animate);
     }
-
 
     function enableTimeSlider(xStart, initialVx, initialVy, initialHeight, angleRad, simulationTime) {
         const timeSlider = document.getElementById('timeSlider');
@@ -333,36 +339,53 @@ function simulateTrajectory() {
     
         timeSlider.max = Math.ceil(simulationTime * 100); // Slider range in increments of 0.01 seconds
         timeSlider.value = timeSlider.max;
-        timeSliderValue.textContent = `${(timeSlider.max/100).toFixed(2)} s`; // Display initial time value
+        timeSliderValue.textContent = `${(timeSlider.max / 100).toFixed(2)} s`; // Display initial time value
     
-        timeSlider.oninput = () => updateBallPositionFromTime(
-            xStart, initialVx, initialVy, initialHeight, angleRad, timeSlider
-        );
+        timeSlider.oninput = () => {
+            const time = timeSlider.value / 100; // Convert slider value to seconds
+            console.log("Time" + time);
+            timeSliderValue.textContent = `${time.toFixed(2)} s`;
+            updateBallPositionFromTime(xStart, initialVx, initialVy, initialHeight, angleRad, timeSlider);
+            const horizontalDistance = calculateHorizontalDistance(initialVx, angleRad, time);
+            drawHorizontalDistanceVisualization(xStart, horizontalDistance);
+        };
     }
-
-    function drawHorizontalDistanceVisualization(xStart, initialVx, simulationTime) {
-        // Calculate horizontal distance
-        const horizontalDistance = xStart + initialVx * simulationTime;
     
-        // Create a line from start to end point
-        const startX = xPos * 20;
-        const endX = (xStart + initialVx * simulationTime) * 20;
+    function calculateHorizontalDistance(initialVx, angleRad, time) {
+        return vx * time; // Horizontal distance traveled at the given time
+    }
+    
+    function drawHorizontalDistanceVisualization(xStart, horizontalDistance) {
+
+        canvas.getObjects().forEach(obj => {
+            if (obj.customType === 'horizontalDistanceVisualization') {
+                canvas.remove(obj);
+            }
+        });
+    
+        // Calculate scaled start and end points for the horizontal distance line
+        const startX = xStart * 20;
+        const endX = (xStart + horizontalDistance) * 20;
         const groundY = canvas.height - 20;
     
         const distanceLine = new fabric.Line([startX, groundY - 15, endX, groundY - 15], {
             stroke: 'black',
             strokeWidth: 2,
-            strokeDashArray: [5, 5]  // Dashed line
+            strokeDashArray: [5, 5], // Dashed line,
+            customType: 'horizontalDistanceVisualization'
         });
-
-        const startBar = new fabric.Line([startX, groundY - 5, startX, groundY - 25],{
+    
+        const startBar = new fabric.Line([startX, groundY - 10, startX, groundY - 20], {
             stroke: 'black',
-            strokeWidth: 3
+            strokeWidth: 2,
+            customType: 'horizontalDistanceVisualization'
         });
-        const endBar = new fabric.Line([endX, groundY - 5, endX, groundY - 25],{
+        const endBar = new fabric.Line([endX, groundY - 10, endX, groundY - 20], {
             stroke: 'black',
-            strokeWidth: 3
+            strokeWidth: 2,
+            customType: 'horizontalDistanceVisualization'
         });
+    
         canvas.add(distanceLine);
         canvas.add(startBar);
         canvas.add(endBar);
@@ -370,16 +393,17 @@ function simulateTrajectory() {
         // Create text to show horizontal distance
         const distanceText = new fabric.Text(`dx: ${horizontalDistance.toFixed(2)} m`, {
             left: (startX + endX) / 2,
-            top: groundY - 30,
+            top: groundY - 40,
             fill: 'black',
             fontSize: 10,
-            originX: 'center'
+            originX: 'center',
+            customType: 'horizontalDistanceVisualization'
         });
         canvas.add(distanceText);
     
         canvas.renderAll();
-
     }
+    
 
 
     // Update the ball's position based on the slider value
@@ -389,8 +413,6 @@ function simulateTrajectory() {
 
         const x = xStart + vx * time;
         const y = height + vy * time - 0.5 * GRAVITY * time * time;
-
-
 
         // Update ball position
         ball.set({
@@ -452,11 +474,11 @@ function simulateTrajectory() {
         // Create a red dot at the max height point
         const maxHeightDot = new fabric.Circle({
             radius: 6,
-            fill: 'red',
+            fill: 'yellow',
             left: maxHeightPointX,
             top: maxHeightPointY,
             originX: 'center',
-            originY: 'bottom'
+            originY: 'center'
         });
 
         // Create a line from start to highest point
