@@ -179,3 +179,45 @@ input[type="range"]::-webkit-slider-thumb {
         grid-template-columns: 1fr;
     }
 }
+
+/* Time Slider Controls Styling */
+.time-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.time-slider-container input[type="range"] {
+    flex-grow: 1;
+    margin: 0 10px;
+}
+
+.time-slider-container button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 40px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.time-slider-container button:hover {
+    background-color: #e0e0e0;
+}
+
+.time-slider-container button:disabled {
+    background-color: #f9f9f9;
+    color: #cccccc;
+    cursor: not-allowed;
+}
+
+.time-slider-container button:focus {
+    outline: 2px solid #4a90e2;
+    outline-offset: 2px;
+}

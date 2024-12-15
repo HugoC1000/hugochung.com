@@ -63,7 +63,11 @@
                 </div> 
 
                 <div>
-                    <input type="range" id="timeSlider" min="0" max="100" value="0" step="1" style="width: 100%; display: none;">
+                    <div class="time-slider-container" style="display: flex; align-items: center; gap: 10px;">
+                        <button id="decrementTimeBtn" style="display: none; padding: 5px 10px;">-</button>
+                        <input type="range" id="timeSlider" min="0" max="100" value="0" step="1" style="width: calc(100% - 100px); display: none;">
+                        <button id="incrementTimeBtn" style="display: none; padding: 5px 10px;">+</button>
+                    </div>
                     <span id="timeSliderValue" style="display: none;">0.0 s</span>
                 </div>
             </div>

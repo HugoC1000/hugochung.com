@@ -74,14 +74,6 @@ function initializeVisualization() {
     console.log(ball.top);
     canvas.add(ball);
 
-    // Angle Arrow
-    angleArrow = new fabric.Line([ball.left, ball.top, ball.left, ball.top], {
-        stroke: 'green',
-        strokeWidth: 5,
-        opacity: 1
-    });
-    canvas.add(angleArrow);
-
     // Velocity Arrow
     velocityArrow = new fabric.Line([ball.left, ball.top, ball.left, ball.top], {
         stroke: 'purple',
@@ -92,7 +84,7 @@ function initializeVisualization() {
 
     // X and Y Velocity Arrows (initially hidden)
     xVelocityArrow = new fabric.Line([0, 0, 0, 0], {
-        stroke: 'blue',
+        stroke: 'green',
         strokeWidth: 2
     });
     yVelocityArrow = new fabric.Line([0, 0, 0, 0], {
@@ -146,25 +138,12 @@ function updateVisualization() {
     const ballBottomY = ball.top;
 
     // console.log("Ball Center X:", ballCenterX);
-    // console.log("Ball Bottom Y:", ballBottomY);
-
-    // Update Angle Arrow
-    const arrowLength = 10;
-    const endX = ballCenterX + arrowLength * Math.cos(radAngle);
-    const endY = ballBottomY - arrowLength * Math.sin(radAngle);
-    
+    // console.log("Ball Bottom Y:", ballBottomY);    
     // console.log("Angle Arrow Calculation:");
     // console.log("Start X:", ballCenterX);
     // console.log("Start Y:", ballBottomY);
     // console.log("End X:", endX);
     // console.log("End Y:", endY);
-
-    angleArrow.set({
-        x1: ballCenterX,
-        y1: ballBottomY,
-        x2: endX,
-        y2: endY
-    });
 
     // Update Velocity Arrow
     const velocityArrowLength = velocity * 5;
@@ -184,7 +163,6 @@ function updateVisualization() {
         y2: vArrowEndY
     });
 
-    angleArrow.setCoords();
     velocityArrow.setCoords();
 
     drawGroundLine();
@@ -333,25 +311,70 @@ function simulateTrajectory() {
     function enableTimeSlider(xStart, initialVx, initialVy, initialHeight, angleRad, simulationTime) {
         const timeSlider = document.getElementById('timeSlider');
         const timeSliderValue = document.getElementById('timeSliderValue');
-    
+        const decrementBtn = document.getElementById('decrementTimeBtn');
+        const incrementBtn = document.getElementById('incrementTimeBtn');
+        
         timeSlider.style.display = 'block';
         timeSliderValue.style.display = 'block';
+        decrementBtn.style.display = 'block';
+        incrementBtn.style.display = 'block';
+
+        decrementBtn.disabled = false;
+        incrementBtn.disabled = false;
+        
+        // Set max value for the slider in hundredths of a second
+        timeSlider.max = Math.ceil(simulationTime * 1000.0); // Slider range in increments of 0.001 seconds
+        timeSlider.value = timeSlider.max;  
+        
+        // Display the initial time value
+        timeSliderValue.textContent = `${(timeSlider.value / 1000.0).toFixed(3)} s`;
     
-        timeSlider.max = Math.ceil(simulationTime * 100); // Slider range in increments of 0.01 seconds
-        timeSlider.value = timeSlider.max;
-        timeSliderValue.textContent = `${(timeSlider.max / 100).toFixed(2)} s`; // Display initial time value
+        timeSlider.step = 1;
     
+        // Existing time slider input handler
         timeSlider.oninput = () => {
-            const time = timeSlider.value / 100; // Convert slider value to seconds
-            console.log("Time" + time);
-            timeSliderValue.textContent = `${time.toFixed(2)} s`;
+            const time = timeSlider.value / 1000.0; // Convert slider value to seconds
+            timeSliderValue.textContent = `${time.toFixed(3)} s`; 
             updateBallPositionFromTime(xStart, initialVx, initialVy, initialHeight, angleRad, timeSlider);
             const horizontalDistance = calculateHorizontalDistance(initialVx, angleRad, time);
             drawHorizontalDistanceVisualization(xStart, horizontalDistance);
         };
+    
+        // Setup increment/decrement controls
+        setupTimeSliderControls();
+    }
+
+    function setupTimeSliderControls() {
+        const timeSlider = document.getElementById('timeSlider');
+        const decrementBtn = document.getElementById('decrementTimeBtn');
+        const incrementBtn = document.getElementById('incrementTimeBtn');
+        const timeSliderValue = document.getElementById('timeSliderValue');
+    
+    
+        decrementBtn.addEventListener('click', () => {
+            const currentValue = Number(timeSlider.value);
+            const step = Number(timeSlider.step);
+            
+            if (currentValue > Number(timeSlider.min)) {
+                timeSlider.value = (currentValue - step).toFixed(3);
+                timeSlider.dispatchEvent(new Event('input'));
+            }
+        });
+    
+        incrementBtn.addEventListener('click', () => {
+            const currentValue = Number(timeSlider.value);
+            const step = Number(timeSlider.step);
+            
+            if (currentValue < Number(timeSlider.max)) {
+                timeSlider.value = (currentValue + step).toFixed(3);
+                timeSlider.dispatchEvent(new Event('input'));
+            }
+        });
     }
     
+    
     function calculateHorizontalDistance(initialVx, angleRad, time) {
+        console.log("Max heightX: " + vx * time + ", " + "Time: " + time);
         return vx * time; // Horizontal distance traveled at the given time
     }
     
@@ -408,7 +431,7 @@ function simulateTrajectory() {
 
     // Update the ball's position based on the slider value
     function updateBallPositionFromTime(xStart, vx, vy, height, angleRad, slider) {
-        const time = slider.value / 100; // Convert slider value to seconds
+        const time = slider.value / 1000; // Convert slider value to seconds
         const timeSliderValue = document.getElementById('timeSliderValue');
 
         const x = xStart + vx * time;
@@ -444,8 +467,6 @@ function simulateTrajectory() {
         });
 
 
-        // Update the time display
-        timeSliderValue.textContent = `${time.toFixed(2)} s`;
 
         canvas.renderAll();
     }
@@ -466,6 +487,7 @@ function simulateTrajectory() {
     
         // Calculate horizontal distance at max height
         const maxHeightX = xPos + vx * timeToMaxHeight;
+        console.log("Max heightX: " + maxHeightX + "Time: " + timeToMaxHeight);
     
         // Calculate position on canvas
         const maxHeightPointX = maxHeightX * 20;
