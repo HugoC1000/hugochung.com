@@ -283,6 +283,7 @@ function simulateTrajectory() {
                 left: x * 20 - 10,
                 top: canvas.height - 20
             });
+            
 
             const trajectoryPath = new fabric.Polyline(trajectoryPoints, {
                 stroke: 'blue',
@@ -291,17 +292,12 @@ function simulateTrajectory() {
             });
 
             canvas.insertAt(trajectoryPath, canvas.getObjects().length - 5);
-            drawMaxHeightAnnotation(
-                Number(velocitySlider.value), 
-                Number(angleSlider.value), 
-                Number(heightSlider.value), 
-                Number(xPosSlider.value)
-            );
             enableTimeSlider(xPos, vx, vy, height, radAngle, t);
             const horizontalDistance = calculateHorizontalDistance(vx, radAngle, t);
             drawHorizontalDistanceVisualization(xPos, horizontalDistance); 
             cancelAnimationFrame(animationFrame);
             calculateTrajectoryResults(velocity, angle, height, xPos);
+            drawVerticalDisplacementVisualization(xPos, vx, vy, height, radAngle, t)
             return;
         }
 
@@ -338,6 +334,7 @@ function simulateTrajectory() {
             updateBallPositionFromTime(xStart, initialVx, initialVy, initialHeight, angleRad, timeSlider);
             const horizontalDistance = calculateHorizontalDistance(initialVx, angleRad, time);
             drawHorizontalDistanceVisualization(xStart, horizontalDistance);
+            drawVerticalDisplacementVisualization(xStart, initialVx, initialVy, initialHeight, angleRad, time);
         };
     
         // Setup increment/decrement controls
@@ -356,7 +353,7 @@ function simulateTrajectory() {
             const step = Number(timeSlider.step);
             
             if (currentValue > Number(timeSlider.min)) {
-                timeSlider.value = (currentValue - step).toFixed(3);
+                timeSlider.value = (currentValue - 1).toFixed(3);
                 timeSlider.dispatchEvent(new Event('input'));
             }
         });
@@ -366,7 +363,7 @@ function simulateTrajectory() {
             const step = Number(timeSlider.step);
             
             if (currentValue < Number(timeSlider.max)) {
-                timeSlider.value = (currentValue + step).toFixed(3);
+                timeSlider.value = (currentValue + 1).toFixed(3);
                 timeSlider.dispatchEvent(new Event('input'));
             }
         });
@@ -414,7 +411,7 @@ function simulateTrajectory() {
         canvas.add(endBar);
     
         // Create text to show horizontal distance
-        const distanceText = new fabric.Text(`dx: ${horizontalDistance.toFixed(2)} m`, {
+        const distanceText = new fabric.Text(`dx: ${horizontalDistance.toFixed(3)} m`, {
             left: (startX + endX) / 2,
             top: groundY - 40,
             fill: 'black',
@@ -470,82 +467,64 @@ function simulateTrajectory() {
 
         canvas.renderAll();
     }
-
-    function drawMaxHeightAnnotation(velocity, angle, height, xPos) {
-        // Convert angle to radians
-        const radAngle = angle * Math.PI / 180;
-    
-        // Initial velocity components
-        const vx = velocity * Math.cos(radAngle);
-        const vy = velocity * Math.sin(radAngle);
-    
-        // Calculate time to reach max height
-        const timeToMaxHeight = vy / GRAVITY;
-    
-        // Calculate max height using kinematic equation
-        const maxHeight = height + (vy * vy) / (2 * GRAVITY);
-    
-        // Calculate horizontal distance at max height
-        const maxHeightX = xPos + vx * timeToMaxHeight;
-        console.log("Max heightX: " + maxHeightX + "Time: " + timeToMaxHeight);
-    
-        // Calculate position on canvas
-        const maxHeightPointX = maxHeightX * 20;
-        const maxHeightPointY = canvas.height - 20 - (maxHeight * 20);
-    
-        // Create a red dot at the max height point
-        const maxHeightDot = new fabric.Circle({
-            radius: 6,
-            fill: 'yellow',
-            left: maxHeightPointX,
-            top: maxHeightPointY,
-            originX: 'center',
-            originY: 'center'
-        });
-
-        // Create a line from start to highest point
-        const startY = canvas.height - 20 - (height * 20);
-        const endY = canvas.height - 20 - (maxHeight * 20);
-    
-        const distanceLine = new fabric.Line([maxHeightPointX, startY, maxHeightPointX, endY], {
-            stroke: 'black',
-            strokeWidth: 2,
-            strokeDashArray: [5, 5]  // Dashed line
-        });
-
-        const startBar = new fabric.Line([maxHeightPointX - 5, startY, maxHeightPointX + 5, startY],{
-            stroke: 'black',
-            strokeWidth: 2
-        });
-        const endBar = new fabric.Line([maxHeightPointX - 5, endY, maxHeightPointX + 5, endY],{
-            stroke: 'black',
-            strokeWidth: 2
-        });
-
-        const distanceText = new fabric.Text(`dy: ${(maxHeight - height).toFixed(2)} m`, {
-            left: maxHeightPointX + 10,
-            top: (startY + endY) / 2,
-            fill: 'black',
-            fontSize: 10,
-            originX: 'left'
-        });
-    
-        // Create text annotation with max height details
-        const maxHeightText = new fabric.Text(
-            `X Dist: ${maxHeightX.toFixed(2)} m\nTime: ${timeToMaxHeight.toFixed(2)} s`, 
-            {
-                left: maxHeightPointX,
-                top: maxHeightPointY - 15,
-                fill: 'black',
-                fontSize: 10,
-                originX: 'center',
-                originY: 'bottom'
+    function drawVerticalDisplacementVisualization(xStart, initialVx, initialVy, initialHeight, angleRad, time) {
+        // Remove existing vertical displacement visualization objects
+        canvas.getObjects().forEach(obj => {
+            if (obj.customType === 'verticalDisplacementVisualization') {
+                canvas.remove(obj);
             }
-        );
+        });
     
-        // Add dot and text to the canvas
-        canvas.add(maxHeightDot, maxHeightText);
-        canvas.add(distanceLine, startBar, endBar, distanceText);
+        // Calculate vertical displacement at given time
+        const GRAVITY = 9.8;
+        const y = initialHeight + initialVy * time - 0.5 * GRAVITY * time * time;
+        const verticalDisplacement = y - initialHeight;
+
+        horizontalDistance = calculateHorizontalDistance(initialVx, angleRad, t);
+
+        canvasXEnd = (horizontalDistance + xPos) * 20;
+    
+        // Calculate scaled start and end points for the vertical displacement line
+        const groundY = canvas.height - 20;
+        const startY = groundY - initialHeight * 20;
+        const endY = groundY - y * 20;
+    
+        // Create vertical displacement line
+        const displacementLine = new fabric.Line([canvasXEnd + 25, startY, canvasXEnd + 25, endY], {
+            stroke: 'green',
+            strokeWidth: 2,
+            strokeDashArray: [5, 5], // Dashed line
+            customType: 'verticalDisplacementVisualization'
+        });
+    
+        // Create start and end bars
+        const startBar = new fabric.Line([canvasXEnd + 15, startY, canvasXEnd + 35, startY], {
+            stroke: 'green',
+            strokeWidth: 2,
+            customType: 'verticalDisplacementVisualization'
+        });
+        const endBar = new fabric.Line([canvasXEnd + 15, endY, canvasXEnd + 35, endY], {
+            stroke: 'green',
+            strokeWidth: 2,
+            customType: 'verticalDisplacementVisualization'
+        });
+    
+        // Create text to show vertical displacement
+        const displacementText = new fabric.Text(`dy: ${verticalDisplacement.toFixed(3)} m`, {
+            left: canvasXEnd + 35,
+            top: (startY + endY) / 2,
+            fill: 'green',
+            fontSize: 10,
+            originY: 'center',
+            customType: 'verticalDisplacementVisualization'
+        });
+    
+        // Add all elements to the canvas
+        canvas.add(displacementLine);
+        canvas.add(startBar);
+        canvas.add(endBar);
+        canvas.add(displacementText);
+    
         canvas.renderAll();
     }
 
@@ -572,12 +551,12 @@ function simulateTrajectory() {
         const finalVelocity = Math.sqrt(finalVx * finalVx + finalVy * finalVy);
     
         // Update results in the DOM
-        document.getElementById('finalVelocity').textContent = finalVelocity.toFixed(2);
-        document.getElementById('finalVelocityX').textContent = finalVx.toFixed(2);
-        document.getElementById('finalVelocityY').textContent = finalVy.toFixed(2);
-        document.getElementById('horizontalDistance').textContent = horizontalDistance.toFixed(2);
-        document.getElementById('timeOfFlight').textContent = timeOfFlight.toFixed(2);
-        document.getElementById('maxHeight').textContent = maxHeight.toFixed(2);
+        document.getElementById('finalVelocity').textContent = finalVelocity.toFixed(3);
+        document.getElementById('finalVelocityX').textContent = finalVx.toFixed(3);
+        document.getElementById('finalVelocityY').textContent = finalVy.toFixed(3);
+        document.getElementById('horizontalDistance').textContent = horizontalDistance.toFixed(3);
+        document.getElementById('timeOfFlight').textContent = timeOfFlight.toFixed(3);
+        document.getElementById('maxHeight').textContent = maxHeight.toFixed(3);
     }
     
 
