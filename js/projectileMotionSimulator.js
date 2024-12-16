@@ -1,235 +1,413 @@
 // Physics constants
 const GRAVITY = 9.8;  // m/s²
 
-// Canvas and Fabric setup
+const DOM = {
+    // Sliders
+    velocity: {
+        slider: document.getElementById('velocitySlider'),
+        value: document.getElementById('velocityValue')
+    },
+    angle: {
+        slider: document.getElementById('angleSlider'),
+        value: document.getElementById('angleValue')
+    },
+    height: {
+        slider: document.getElementById('heightSlider'),
+        value: document.getElementById('heightValue')
+    },
+    xPos: {
+        slider: document.getElementById('xPosSlider'),
+        value: document.getElementById('xPosValue')
+    },
+    timeMultiplier: {
+        slider: document.getElementById('timeMultiplier'),
+        value: document.getElementById('timeMultiplierValue')
+    },
+    // Time Slider Controls
+    time: {
+        slider: document.getElementById('timeSlider'),
+        value: document.getElementById('timeSliderValue'),
+        decrementBtn: document.getElementById('decrementTimeBtn'),
+        incrementBtn: document.getElementById('incrementTimeBtn')
+    },
+    // Results Display
+    results: {
+        finalVelocity: document.getElementById('finalVelocity'),
+        finalVelocityX: document.getElementById('finalVelocityX'),
+        finalVelocityY: document.getElementById('finalVelocityY'),
+        horizontalDistance: document.getElementById('horizontalDistance'),
+        timeOfFlight: document.getElementById('timeOfFlight'),
+        maxHeight: document.getElementById('maxHeight')
+    },
+    simulateBtn: document.getElementById('simulateBtn')
+};
+
+// Canvas Configuration
 const canvas = new fabric.Canvas('simulationCanvas', {
     width: 800,
     height: 500,
     backgroundColor: '#f0f0f0',
-    renderOnAddRemove: false, // Disable automatic rendering
-    stateful: false // Disable object state tracking
+    renderOnAddRemove: false,
+    stateful: false
 });
 
+// Visualization Objects
+const VisualizationObjects = {
+    ball: null,
+    groundLine: null,
+    trajectoryLine: null,
+    velocityArrow: null,
+    xVelocityArrow: null,
+    yVelocityArrow: null
+};
 
-// DOM Elements
-const velocitySlider = document.getElementById('velocitySlider');
-const angleSlider = document.getElementById('angleSlider');
-const heightSlider = document.getElementById('heightSlider');
-const xPosSlider = document.getElementById('xPosSlider');
-const timeMultiplierSlider = document.getElementById('timeMultiplier');
-const simulateBtn = document.getElementById('simulateBtn');
+// Calculation Utilities
+const Calculations = {
+    /**
+     * Convert degrees to radians
+     * @param {number} degrees 
+     * @returns {number} radians
+     */
+    degreesToRadians: (degrees) => degrees * Math.PI / 180,
 
-const velocityValue = document.getElementById('velocityValue');
-const angleValue = document.getElementById('angleValue');
-const heightValue = document.getElementById('heightValue');
-const xPosValue = document.getElementById('xPosValue');
-const timeMultiplierValue = document.getElementById('timeMultiplierValue');
+    /**
+     * Calculate initial velocity components
+     * @param {number} initialSpeed 
+     * @param {number} angleRadians 
+     * @returns {Object} Velocity components
+     */
+    calculateVelocityComponents: (initialSpeed, angleRadians) => ({
+        x: initialSpeed * Math.cos(angleRadians),
+        y: initialSpeed * Math.sin(angleRadians)
+    }),
 
+    /**
+     * Calculate time of flight
+     * @param {number} initialVelocityY 
+     * @param {number} initialHeight 
+     * @returns {number} Time of flight
+     */
+    calculateTimeOfFlight: (initialVelocityY, initialHeight) => 
+        (initialVelocityY + Math.sqrt(initialVelocityY * initialVelocityY + 2 * GRAVITY * initialHeight)) / GRAVITY,
 
-// Visualization objects
-let ball, groundLine, trajectoryLine, velocityArrow, angleArrow, xVelocityArrow, yVelocityArrow;
+    /**
+     * Calculate horizontal distance
+     * @param {number} initialVelocityX 
+     * @param {number} timeOfFlight 
+     * @param {number} initialXPosition 
+     * @returns {number} Horizontal distance
+     */
+    calculateHorizontalDistance: (initialVelocityX, timeOfFlight, initialXPosition) => 
+        initialXPosition + initialVelocityX * timeOfFlight,
+
+    /**
+     * Calculate maximum height
+     * @param {number} initialVelocityY 
+     * @param {number} initialHeight 
+     * @returns {number} Maximum height
+     */
+    calculateMaxHeight: (initialVelocityY, initialHeight) => 
+        initialHeight + (initialVelocityY * initialVelocityY) / (2 * GRAVITY),
+
+    /**
+     * Calculate final velocity components
+     * @param {number} initialVelocityX 
+     * @param {number} initialVelocityY 
+     * @param {number} timeOfFlight 
+     * @returns {Object} Final velocity components
+     */
+    calculateFinalVelocity: (initialVelocityX, initialVelocityY, timeOfFlight) => {
+        const finalVelocityY = initialVelocityY - GRAVITY * timeOfFlight;
+        return {
+            x: initialVelocityX,
+            y: finalVelocityY,
+            total: Math.sqrt(initialVelocityX * initialVelocityX + finalVelocityY * finalVelocityY)
+        };
+    },
+
+    calculateBallPositionFromTime: (initialXPosition, initialHeight, initialVelocityX, initialVelocityY, timeOfFlight) => {
+        const positionX = initialXPosition + initialVelocityX * timeOfFlight;
+        const positionY = initialHeight + initialVelocityY * timeOfFlight - 0.5 * GRAVITY * timeOfFlight * timeOfFlight;
+        return { x: positionX, y: positionY };
+    }
+};
+
+// Visualization Helpers
+const VisualizationHelpers = {
+    /**
+     * Scale X coordinate for canvas
+     * @param {number} x 
+     * @returns {number} Scaled X coordinate
+     */
+    scaleX: (x) => x * 20,
+
+    /**
+     * Scale Y coordinate for canvas
+     * @param {number} y 
+     * @returns {number} Scaled Y coordinate
+     */
+    scaleY: (y) => canvas.height - 20 - (y * 20),
+
+    /**
+     * Draw ground line
+     */
+    drawGroundLine: () => {
+        const groundY = canvas.height - 20;
+        const groundLine = new fabric.Line([0, groundY, canvas.width, groundY], {
+            stroke: 'black',
+            strokeWidth: 2
+        });
+        canvas.add(groundLine);
+        canvas.renderAll();
+        VisualizationObjects.groundLine = groundLine;
+    }
+    
+};
+
 let animationFrame = null;
 
-// Update value displays
-velocitySlider.oninput = () => {
-    velocityValue.textContent = `${velocitySlider.value} m/s`;
-    updateVisualization();
-};
-angleSlider.oninput = () => {
-    angleValue.textContent = `${angleSlider.value}°`;
-    updateVisualization();
-};
-heightSlider.oninput = () => {
-    heightValue.textContent = `${heightSlider.value} m`;
-    updateVisualization();
-};
-xPosSlider.oninput = () => {
-    xPosValue.textContent = `${xPosSlider.value} m`;
-    updateVisualization();
-};
+// Slider Update Handlers
+function setupSliderHandlers() {
+    const updateSliderDisplay = (slider, valueDisplay, unit = '') => {
+        valueDisplay.textContent = `${slider.value}${unit}`;
+        updatePreSimulationVisualization();
+    };
 
-timeMultiplierSlider.oninput = () => {
-    timeMultiplierValue.textContent = `${timeMultiplierSlider.value}x`;
-    updateVisualization();
+    DOM.velocity.slider.oninput = () => updateSliderDisplay(DOM.velocity.slider, DOM.velocity.value, ' m/s');
+    DOM.angle.slider.oninput = () => updateSliderDisplay(DOM.angle.slider, DOM.angle.value, '°');
+    DOM.height.slider.oninput = () => updateSliderDisplay(DOM.height.slider, DOM.height.value, ' m');
+    DOM.xPos.slider.oninput = () => updateSliderDisplay(DOM.xPos.slider, DOM.xPos.value, ' m');
+    DOM.timeMultiplier.slider.oninput = () => updateSliderDisplay(DOM.timeMultiplier.slider, DOM.timeMultiplier.value, 'x');
 }
 
 // Create initial visualization objects
-function initializeVisualization() {
+function initializeVisualizationObjects() {
+    // Retrieve initial values from sliders
+    const initialSpeed = Number(DOM.velocity.slider.value);
+    const angleDegrees = Number(DOM.angle.slider.value);
+    const initialHeight = Number(DOM.height.slider.value);
+    const initialXPosition = Number(DOM.xPos.slider.value);
 
-    
-    // Ball
-    ball = new fabric.Circle({
+    // Convert angle to radians
+    const angleRadians = Calculations.degreesToRadians(angleDegrees);
+
+    // Calculate initial velocity components
+    const initialVelocity = Calculations.calculateVelocityComponents(initialSpeed, angleRadians);
+
+    // Create Ball
+    VisualizationObjects.ball = new fabric.Circle({
         radius: 10,
-        fill: 'red',
-        left: Number(xPosSlider.value) * 20 - 10,
-        top: canvas.height - 20 - Number(heightSlider.value) * 20 ,
-        originY: 'bottom' 
+        fill: 'black',
+        left: VisualizationHelpers.scaleX(initialXPosition) - 10,
+        top: VisualizationHelpers.scaleY(initialHeight),
+        originY: 'bottom'
     });
+    canvas.add(VisualizationObjects.ball);
 
-    
-
-    console.log("Ball tops")
-
-    console.log(canvas.height - 20 - Number(heightSlider.value) * 20 );
-    console.log(ball.top);
-    canvas.add(ball);
-
-    // Velocity Arrow
-    velocityArrow = new fabric.Line([ball.left, ball.top, ball.left, ball.top], {
+    // Create Velocity Arrow
+    VisualizationObjects.velocityArrow = new fabric.Line([
+        VisualizationHelpers.scaleX(initialXPosition),
+        VisualizationHelpers.scaleY(initialHeight),
+        VisualizationHelpers.scaleX(initialXPosition) + initialSpeed * 5 * Math.cos(angleRadians),
+        VisualizationHelpers.scaleY(initialHeight) - initialSpeed * 5 * Math.sin(angleRadians)
+    ], {
         stroke: 'purple',
         strokeWidth: 5,
         opacity: 1
     });
-    canvas.add(velocityArrow);
+    canvas.add(VisualizationObjects.velocityArrow);
 
-    // X and Y Velocity Arrows (initially hidden)
-    xVelocityArrow = new fabric.Line([0, 0, 0, 0], {
+    // Create X Velocity Arrow
+    VisualizationObjects.xVelocityArrow = new fabric.Line([
+        VisualizationHelpers.scaleX(initialXPosition),
+        VisualizationHelpers.scaleY(initialHeight),
+        VisualizationHelpers.scaleX(initialXPosition) + initialVelocity.x * 5,
+        VisualizationHelpers.scaleY(initialHeight)
+    ], {
         stroke: 'green',
         strokeWidth: 2
     });
-    yVelocityArrow = new fabric.Line([0, 0, 0, 0], {
+    canvas.add(VisualizationObjects.xVelocityArrow);
+
+    // Create Y Velocity Arrow
+    VisualizationObjects.yVelocityArrow = new fabric.Line([
+        VisualizationHelpers.scaleX(initialXPosition),
+        VisualizationHelpers.scaleY(initialHeight),
+        VisualizationHelpers.scaleX(initialXPosition),
+        VisualizationHelpers.scaleY(initialHeight) - initialVelocity.y * 5
+    ], {
         stroke: 'red',
         strokeWidth: 2
     });
-    canvas.add(xVelocityArrow, yVelocityArrow);
+    canvas.add(VisualizationObjects.yVelocityArrow);
 
-    updateVisualization();
-}
-function drawGroundLine() {
-    // Adjust ground level for the new canvas height
-    const groundY = canvas.height - 20; // Ground is 20px from the bottom of the canvas
+    // Draw ground line
+    VisualizationHelpers.drawGroundLine();
 
-    // Create a horizontal line for y = 0
-    const groundLine = new fabric.Line([0, groundY, canvas.width, groundY], {
-        stroke: 'black',
-        strokeWidth: 2
-    });
-    canvas.add(groundLine);
+    // Render canvas
+    canvas.renderAll();
 }
 
-function updateVisualization() {
-    const velocity = Number(velocitySlider.value);
-    const angle = Number(angleSlider.value);
-    const height = Number(heightSlider.value);
-    const xPos = Number(xPosSlider.value);
+function updatePreSimulationVisualization() {
+    // Retrieve current slider values
+    const initialSpeed = Number(DOM.velocity.slider.value);
+    const angleDegrees = Number(DOM.angle.slider.value);
+    const initialHeight = Number(DOM.height.slider.value);
+    const initialXPosition = Number(DOM.xPos.slider.value);
 
-    const radAngle = angle * Math.PI / 180;
-    const vx = velocity * Math.cos(radAngle);
-    const vy = velocity * Math.sin(radAngle);
+    // Convert angle to radians
+    const angleRadians = Calculations.degreesToRadians(angleDegrees);
 
-    // console.log("Visualization Update Inputs:");
-    // console.log("Velocity:", velocity);
-    // console.log("Angle:", angle);
-    // console.log("Height:", height);
-    // console.log("X Position:", xPos);
-    // console.log("Radian Angle:", radAngle);
-    // console.log("Velocity X:", vx);
-    // console.log("Velocity Y:", vy);
+    // Calculate initial velocity components
+    const initialVelocity = Calculations.calculateVelocityComponents(initialSpeed, angleRadians);
 
     // Update ball position
-    ball.set({
-        left: xPos * 20 - 10,
-        top: canvas.height - 20 - (height * 20),
-        originY: 'bottom'
+    if (!VisualizationObjects.ball) {
+        VisualizationObjects.ball = new fabric.Circle({
+            radius: 10,
+            fill: 'red',
+            originY: 'bottom'
+        });
+        canvas.add(VisualizationObjects.ball);
+    }
+
+    // Position the ball
+    VisualizationObjects.ball.set({
+        left: VisualizationHelpers.scaleX(initialXPosition) - VisualizationObjects.ball.radius,
+        top: VisualizationHelpers.scaleY(initialHeight)
     });
 
-    // Calculate the bottom-middle position of the ball
-    const ballCenterX = ball.left + ball.radius;
-    const ballBottomY = ball.top;
+    // Create or update velocity arrow
+    if (!VisualizationObjects.velocityArrow) {
+        VisualizationObjects.velocityArrow = new fabric.Line([0, 0, 0, 0], {
+            stroke: 'purple',
+            strokeWidth: 5,
+            opacity: 1
+        });
+        canvas.add(VisualizationObjects.velocityArrow);
+    }
 
-    // console.log("Ball Center X:", ballCenterX);
-    // console.log("Ball Bottom Y:", ballBottomY);    
-    // console.log("Angle Arrow Calculation:");
-    // console.log("Start X:", ballCenterX);
-    // console.log("Start Y:", ballBottomY);
-    // console.log("End X:", endX);
-    // console.log("End Y:", endY);
+    // Calculate velocity arrow end point
+    const ballCenterX = VisualizationObjects.ball.left + VisualizationObjects.ball.radius;
+    const ballBottomY = VisualizationObjects.ball.top;
+    const velocityArrowLength = initialSpeed * 5;
+    const vArrowEndX = ballCenterX + velocityArrowLength * Math.cos(angleRadians);
+    const vArrowEndY = ballBottomY - velocityArrowLength * Math.sin(angleRadians);
 
-    // Update Velocity Arrow
-    const velocityArrowLength = velocity * 5;
-    const vArrowEndX = ballCenterX + velocityArrowLength * Math.cos(radAngle);
-    const vArrowEndY = ballBottomY - velocityArrowLength * Math.sin(radAngle);
-    
-    // console.log("Velocity Arrow Calculation:");
-    // console.log("Start X:", ballCenterX);
-    // console.log("Start Y:", ballBottomY);
-    // console.log("End X:", vArrowEndX);
-    // console.log("End Y:", vArrowEndY);
-
-    velocityArrow.set({
+    // Update velocity arrow
+    VisualizationObjects.velocityArrow.set({
         x1: ballCenterX,
         y1: ballBottomY,
         x2: vArrowEndX,
         y2: vArrowEndY
     });
 
-    velocityArrow.setCoords();
+    // Create or update X and Y velocity component arrows
+    if (!VisualizationObjects.xVelocityArrow) {
+        VisualizationObjects.xVelocityArrow = new fabric.Line([0, 0, 0, 0], {
+            stroke: 'green',
+            strokeWidth: 2
+        });
+        canvas.add(VisualizationObjects.xVelocityArrow);
+    }
 
-    drawGroundLine();
+    if (!VisualizationObjects.yVelocityArrow) {
+        VisualizationObjects.yVelocityArrow = new fabric.Line([0, 0, 0, 0], {
+            stroke: 'red',
+            strokeWidth: 2
+        });
+        canvas.add(VisualizationObjects.yVelocityArrow);
+    }
 
+    // Update X and Y velocity arrows
+    VisualizationObjects.xVelocityArrow.set({
+        x1: ballCenterX,
+        y1: ballBottomY,
+        x2: ballCenterX + initialVelocity.x * 5,
+        y2: ballBottomY
+    });
+
+    VisualizationObjects.yVelocityArrow.set({
+        x1: ballCenterX,
+        y1: ballBottomY,
+        x2: ballCenterX,
+        y2: ballBottomY - initialVelocity.y * 5
+    });
+
+    // Ensure ground line is drawn
+    VisualizationHelpers.drawGroundLine();
+
+    // Render all canvas objects
     canvas.renderAll();
 }
 
 function simulateTrajectory() {
-    // Clear previous animation and trajectory
+    // Clear previous animation
     if (animationFrame) {
         cancelAnimationFrame(animationFrame);
     }
 
-    // Remove previous trajectory and simulation objects
+    VisualizationHelpers.drawGroundLine();
+
+
+    // Clear existing trajectory objects
     canvas.getObjects().forEach(obj => {
-        if (obj !== ball && obj !== angleArrow && obj !== velocityArrow && 
-            obj !== xVelocityArrow && obj !== yVelocityArrow) {
-                obj.dispose();
-                canvas.remove(obj);
-            }
-        });
-
-    canvas.renderOnAddRemove = false;
-
-    drawGroundLine();
-
-    const velocity = Number(velocitySlider.value);
-    const angle = Number(angleSlider.value);
-    const height = Number(heightSlider.value);
-    const xPos = Number(xPosSlider.value);
-    const timeMultiplier = Number(timeMultiplierSlider.value);
-
-    const radAngle = angle * Math.PI / 180;
-    const vx = velocity * Math.cos(radAngle);
-    const vy = velocity * Math.sin(radAngle);
-
-    // Trajectory calculation variables
-    let x = xPos;
-    let y = height;
-    let t = 0;
-
-    ball.set({
-        left: x * 20 - 10,
-        top: canvas.height - 20 - (y * 20)
+        if (obj !== VisualizationObjects.ball && 
+            obj !== VisualizationObjects.velocityArrow && 
+            obj !== VisualizationObjects.xVelocityArrow && 
+            obj !== VisualizationObjects.yVelocityArrow && 
+            obj !== VisualizationObjects.groundLine) {
+            canvas.remove(obj);
+        }
     });
 
-    let trajectoryPoints = [{x: ball.left + ball.radius, y: ball.top, t: 0}];
-    let trajectoryPath = null;
+    // Get simulation parameters
+    const initialSpeed = Number(DOM.velocity.slider.value);
+    const angleDegrees = Number(DOM.angle.slider.value);
+    const initialHeight = Number(DOM.height.slider.value);
+    const initialXPosition = Number(DOM.xPos.slider.value);
+    const timeMultiplier = Number(DOM.timeMultiplier.slider.value);
+
+    // Convert angle to radians
+    const angleRadians = Calculations.degreesToRadians(angleDegrees);
+
+    // Calculate initial velocity components
+    const initialVelocity = Calculations.calculateVelocityComponents(initialSpeed, angleRadians);
+
+    // Trajectory calculation variables
+    let x = initialXPosition;
+    let y = initialHeight;
+    let t = 0;
+
+    // Trajectory tracking
+    let trajectoryPoints = [{
+        x: VisualizationHelpers.scaleX(x),
+        y: VisualizationHelpers.scaleY(y),
+        time: 0
+    }];
+
     const MAX_POINTS = 200;
     const SAMPLE_INTERVAL = 0.05;
 
-    let numOfCalculations = 0;
-
     function animate() {
+        // Update time with time multiplier
         t += (0.03 * timeMultiplier);
-        numOfCalculations++;
-        x = xPos + vx * t;
-        y = height + vy * t - 0.5 * GRAVITY * t * t;
 
-        ball.set({
-            left: x * 20 - 10,
-            top: canvas.height - 20 - (y * 20)
+        // Calculate current position
+        x = initialXPosition + initialVelocity.x * t;
+        y = initialHeight + initialVelocity.y * t - 0.5 * GRAVITY * t * t;
+
+        // Update ball position
+        VisualizationObjects.ball.set({
+            left: VisualizationHelpers.scaleX(x) - 10,
+            top: VisualizationHelpers.scaleY(y)
         });
 
-        const ballCenterX = ball.left + ball.radius;
-        const ballBottomY = ball.top;
+        // Ball center coordinates
+        const ballCenterX = VisualizationObjects.ball.left + VisualizationObjects.ball.radius;
+        const ballBottomY = VisualizationObjects.ball.top;
 
+        // Sample trajectory points
         if (trajectoryPoints.length === 0 || 
             (trajectoryPoints.length < MAX_POINTS && 
              Math.floor(t / SAMPLE_INTERVAL) !== Math.floor((t - 0.02) / SAMPLE_INTERVAL))) {
@@ -240,101 +418,139 @@ function simulateTrajectory() {
             });
         }
 
+        // Draw trajectory path
         if (trajectoryPoints.length > 1) {
-            const path = new fabric.Polyline(trajectoryPoints, {
-                stroke: 'blue',
-                fill: false,
-                strokeWidth: 2
-            });
-            canvas.insertAt(path, canvas.getObjects().length - 5);
-        }
-
-        const currentVx = vx;
-        const currentVy = vy - GRAVITY * t;
-
-        xVelocityArrow.set({
-            x1: ballCenterX,
-            y1: ballBottomY,
-            x2: ballCenterX + currentVx * 5,
-            y2: ballBottomY
-        });
-
-        yVelocityArrow.set({
-            x1: ballCenterX,
-            y1: ballBottomY,
-            x2: ballCenterX,
-            y2: ballBottomY - currentVy * 5
-        });
-
-
-        canvas.renderAll();
-
-        //Once simulation finishes. 
-        if (canvas.height - 20 - (y * 20) >= canvas.height-20) {
-            const actualTime = (vy + Math.sqrt(vy * vy + 2 * GRAVITY * height)) / GRAVITY
-            t = actualTime;
-            trajectoryPoints.push({
-                x: (xPos + vx * actualTime) * 20 ,
-                y: canvas.height - 20,
-                time: t
-            });
-
-            ball.set({
-                left: x * 20 - 10,
-                top: canvas.height - 20
-            });
-            
-
             const trajectoryPath = new fabric.Polyline(trajectoryPoints, {
                 stroke: 'blue',
                 fill: false,
                 strokeWidth: 2
             });
-
             canvas.insertAt(trajectoryPath, canvas.getObjects().length - 5);
-            enableTimeSlider(xPos, vx, vy, height, radAngle, t);
-            const horizontalDistance = calculateHorizontalDistance(vx, radAngle, t);
-            drawHorizontalDistanceVisualization(xPos, horizontalDistance); 
+        }
+
+        // Current velocity components
+        const currentVelocityY = initialVelocity.y - GRAVITY * t;
+
+        // Update velocity arrows
+        VisualizationObjects.xVelocityArrow.set({
+            x1: ballCenterX,
+            y1: ballBottomY,
+            x2: ballCenterX + initialVelocity.x * 5,
+            y2: ballBottomY
+        });
+
+        VisualizationObjects.yVelocityArrow.set({
+            x1: ballCenterX,
+            y1: ballBottomY,
+            x2: ballCenterX,
+            y2: ballBottomY - currentVelocityY * 5
+        });
+
+        canvas.renderAll();
+
+        // Check if ball has reached ground
+        if (VisualizationHelpers.scaleY(y) >= canvas.height - 20) {
+            // Calculate actual time to ground
+            const timeToGround = Calculations.calculateTimeOfFlight(initialVelocity.y, initialHeight);
+            
+            // Final trajectory point
+            trajectoryPoints.push({
+                x: VisualizationHelpers.scaleX(initialXPosition + initialVelocity.x * timeToGround),
+                y: canvas.height - 20,
+                time: timeToGround
+            });
+
+            // Draw final trajectory path
+            const finalTrajectoryPath = new fabric.Polyline(trajectoryPoints, {
+                stroke: 'blue',
+                fill: false,
+                strokeWidth: 2
+            });
+            canvas.add(finalTrajectoryPath);
+
+            // Calculate and display trajectory results
+            const finalVelocity = Calculations.calculateFinalVelocity(
+                initialVelocity.x, 
+                initialVelocity.y, 
+                timeToGround
+            );
+
+            VisualizationObjects.ball.set({
+                left: VisualizationHelpers.scaleX(initialXPosition + initialVelocity.x * timeToGround) - 10,
+                top: canvas.height - 20
+            });
+
+
+            VisualizationObjects.xVelocityArrow.set({
+                x1: ballCenterX,
+                y1: ballBottomY,
+                x2: ballCenterX + initialVelocity.x * 5,
+                y2: ballBottomY
+            });
+
+            VisualizationObjects.yVelocityArrow.set({
+                x1: ballCenterX,
+                y1: ballBottomY,
+                x2: ballCenterX,
+                y2: ballBottomY - currentVelocityY * 5
+            });
+
+            // Update results display
+            DOM.results.finalVelocity.textContent = finalVelocity.total.toFixed(3);
+            DOM.results.finalVelocityX.textContent = finalVelocity.x.toFixed(3);
+            DOM.results.finalVelocityY.textContent = finalVelocity.y.toFixed(3);
+            DOM.results.horizontalDistance.textContent = 
+                Calculations.calculateHorizontalDistance(
+                    initialVelocity.x, 
+                    timeToGround, 
+                    initialXPosition
+                ).toFixed(3);
+            DOM.results.timeOfFlight.textContent = timeToGround.toFixed(3);
+            DOM.results.maxHeight.textContent = 
+                Calculations.calculateMaxHeight(
+                    initialVelocity.y, 
+                    initialHeight
+                ).toFixed(3);
+
+            enableTimeSlider(initialXPosition,initialVelocity, initialHeight, angleRadians, timeToGround);
+            drawHorizontalDistanceVisualization(initialXPosition, Calculations.calculateHorizontalDistance(initialVelocity.x, timeToGround, initialXPosition));
+            drawVerticalDisplacementVisualization(initialXPosition, initialVelocity, initialHeight, timeToGround);
+
+            // Stop animation
             cancelAnimationFrame(animationFrame);
-            calculateTrajectoryResults(velocity, angle, height, xPos);
-            drawVerticalDisplacementVisualization(xPos, vx, vy, height, radAngle, t)
             return;
         }
 
+        // Continue animation
         animationFrame = requestAnimationFrame(animate);
     }
 
-    function enableTimeSlider(xStart, initialVx, initialVy, initialHeight, angleRad, simulationTime) {
-        const timeSlider = document.getElementById('timeSlider');
-        const timeSliderValue = document.getElementById('timeSliderValue');
-        const decrementBtn = document.getElementById('decrementTimeBtn');
-        const incrementBtn = document.getElementById('incrementTimeBtn');
-        
-        timeSlider.style.display = 'block';
-        timeSliderValue.style.display = 'block';
-        decrementBtn.style.display = 'block';
-        incrementBtn.style.display = 'block';
+    // Start animation
+    animate();
 
-        decrementBtn.disabled = false;
-        incrementBtn.disabled = false;
+    function enableTimeSlider(initialXPosition, initialVelocity, initialHeight, angleRadians, timeToGround) {        
+        DOM.time.slider.style.display = 'block';
+        DOM.time.value.style.display = 'block';
+        DOM.time.decrementBtn.style.display = 'block';
+        DOM.time.incrementBtn.style.display = 'block';
         
         // Set max value for the slider in hundredths of a second
-        timeSlider.max = Math.ceil(simulationTime * 1000.0); // Slider range in increments of 0.001 seconds
-        timeSlider.value = timeSlider.max;  
+        DOM.time.slider.max = Math.ceil(timeToGround * 1000.0); // Slider range in increments of 0.001 seconds
+        DOM.time.slider.value = DOM.time.slider.max;  
         
         // Display the initial time value
-        timeSliderValue.textContent = `${(timeSlider.value / 1000.0).toFixed(3)} s`;
-    
-        timeSlider.step = 1;
+        DOM.time.value.textContent = `${(DOM.time.slider.value / 1000.0).toFixed(3)} s`;
+        console.log("Time content: " + DOM.time.value.style.textContent);
+        DOM.time.slider.step = 1;
     
         // Existing time slider input handler
-        timeSlider.oninput = () => {
-            const time = timeSlider.value / 1000.0; // Convert slider value to seconds
-            timeSliderValue.textContent = `${time.toFixed(3)} s`; 
-            updateBallPositionFromTime(xStart, initialVx, initialVy, initialHeight, angleRad, timeSlider);
-            const horizontalDistance = calculateHorizontalDistance(initialVx, angleRad, time);
-            drawHorizontalDistanceVisualization(xStart, horizontalDistance);
-            drawVerticalDisplacementVisualization(xStart, initialVx, initialVy, initialHeight, angleRad, time);
+        DOM.time.slider.oninput = () => {
+            const time = DOM.time.slider.value / 1000.0; // Convert slider value to seconds
+            console.log("On input time: " + time);
+            DOM.time.value.textContent = `${time.toFixed(3)} s`; 
+            updateBallPositionFromTime(initialXPosition, initialVelocity, initialHeight);
+            drawHorizontalDistanceVisualization(initialXPosition, Calculations.calculateHorizontalDistance(initialVelocity.x, time, initialXPosition));
+            drawVerticalDisplacementVisualization(initialXPosition, initialVelocity, initialHeight, time);
         };
     
         // Setup increment/decrement controls
@@ -369,13 +585,7 @@ function simulateTrajectory() {
         });
     }
     
-    
-    function calculateHorizontalDistance(initialVx, angleRad, time) {
-        console.log("Max heightX: " + vx * time + ", " + "Time: " + time);
-        return vx * time; // Horizontal distance traveled at the given time
-    }
-    
-    function drawHorizontalDistanceVisualization(xStart, horizontalDistance) {
+    function drawHorizontalDistanceVisualization(initialXPosition, horizontalPosition) {
 
         canvas.getObjects().forEach(obj => {
             if (obj.customType === 'horizontalDistanceVisualization') {
@@ -384,8 +594,9 @@ function simulateTrajectory() {
         });
     
         // Calculate scaled start and end points for the horizontal distance line
-        const startX = xStart * 20;
-        const endX = (xStart + horizontalDistance) * 20;
+        const startX = initialXPosition * 20;
+        const endX = ( horizontalPosition) * 20;
+        console.log("Horizontaol Position Bar: " + horizontalPosition);
         const groundY = canvas.height - 20;
     
         const distanceLine = new fabric.Line([startX, groundY - 15, endX, groundY - 15], {
@@ -411,7 +622,7 @@ function simulateTrajectory() {
         canvas.add(endBar);
     
         // Create text to show horizontal distance
-        const distanceText = new fabric.Text(`dx: ${horizontalDistance.toFixed(3)} m`, {
+        const distanceText = new fabric.Text(`dx: ${horizontalPosition.toFixed(3)} m`, {
             left: (startX + endX) / 2,
             top: groundY - 40,
             fill: 'black',
@@ -427,47 +638,42 @@ function simulateTrajectory() {
 
 
     // Update the ball's position based on the slider value
-    function updateBallPositionFromTime(xStart, vx, vy, height, angleRad, slider) {
-        const time = slider.value / 1000; // Convert slider value to seconds
-        const timeSliderValue = document.getElementById('timeSliderValue');
+    function updateBallPositionFromTime(initialXPosition, initialVelocity, initialHeight) {
+        const time = DOM.time.slider.value / 1000; // Convert slider value to seconds
 
-        const x = xStart + vx * time;
-        const y = height + vy * time - 0.5 * GRAVITY * time * time;
-
+        const ballPosition = Calculations.calculateBallPositionFromTime(initialXPosition, initialHeight, initialVelocity.x, initialVelocity.y, time)
+        console.log("Ball position y: " +  ballPosition.y);
         // Update ball position
-        ball.set({
-            left: x * 20 - 10,
-            top: canvas.height - 20 - Math.max(0, y) * 20 // Ensure it doesn't go below ground
+        VisualizationObjects.ball.set({
+            left: ballPosition.x * 20 - VisualizationObjects.ball.radius,
+            top: canvas.height - 20 - Math.max(0, ballPosition.y) * 20 // Ensure it doesn't go below ground
         });
 
 
-        const ballCenterX = ball.left + ball.radius;
-        const ballBottomY = ball.top;
+        const ballCenterX = VisualizationObjects.ball.left + VisualizationObjects.ball.radius;
+        const ballBottomY = VisualizationObjects.ball.top;
 
         //Update the velocity vectors
-         
-        const currentVx = vx;
-        const currentVy = vy - GRAVITY * time;
 
-        xVelocityArrow.set({
+        const currentVelocity = Calculations.calculateFinalVelocity(initialVelocity.x,initialVelocity.y,time);
+        
+        VisualizationObjects.xVelocityArrow.set({
             x1: ballCenterX,
             y1: ballBottomY,
-            x2: ballCenterX + currentVx * 5,
+            x2: ballCenterX + currentVelocity.x * 5,
             y2: ballBottomY
         });
 
-        yVelocityArrow.set({
+        VisualizationObjects.yVelocityArrow.set({
             x1: ballCenterX,
             y1: ballBottomY,
             x2: ballCenterX,
-            y2: ballBottomY - currentVy * 5
+            y2: ballBottomY - currentVelocity.y * 5
         });
-
-
 
         canvas.renderAll();
     }
-    function drawVerticalDisplacementVisualization(xStart, initialVx, initialVy, initialHeight, angleRad, time) {
+    function drawVerticalDisplacementVisualization(initialXPosition, initialVelocity, initialHeight, time) {
         // Remove existing vertical displacement visualization objects
         canvas.getObjects().forEach(obj => {
             if (obj.customType === 'verticalDisplacementVisualization') {
@@ -475,23 +681,18 @@ function simulateTrajectory() {
             }
         });
     
-        // Calculate vertical displacement at given time
-        const GRAVITY = 9.8;
-        const y = initialHeight + initialVy * time - 0.5 * GRAVITY * time * time;
-        const verticalDisplacement = y - initialHeight;
+        const ballPosition = Calculations.calculateBallPositionFromTime(initialXPosition, initialHeight, initialVelocity.x, initialVelocity.y, time);
+        const verticalDisplacement = ballPosition.y - initialHeight;
 
-        horizontalDistance = calculateHorizontalDistance(initialVx, angleRad, t);
-
-        canvasXEnd = (horizontalDistance + xPos) * 20;
+        canvasXEnd = ballPosition.x * 20;
     
-        // Calculate scaled start and end points for the vertical displacement line
         const groundY = canvas.height - 20;
         const startY = groundY - initialHeight * 20;
-        const endY = groundY - y * 20;
+        const endY = groundY - ballPosition.y * 20;
     
         // Create vertical displacement line
         const displacementLine = new fabric.Line([canvasXEnd + 25, startY, canvasXEnd + 25, endY], {
-            stroke: 'green',
+            stroke: 'red',
             strokeWidth: 2,
             strokeDashArray: [5, 5], // Dashed line
             customType: 'verticalDisplacementVisualization'
@@ -499,21 +700,21 @@ function simulateTrajectory() {
     
         // Create start and end bars
         const startBar = new fabric.Line([canvasXEnd + 15, startY, canvasXEnd + 35, startY], {
-            stroke: 'green',
+            stroke: 'red',
             strokeWidth: 2,
             customType: 'verticalDisplacementVisualization'
         });
         const endBar = new fabric.Line([canvasXEnd + 15, endY, canvasXEnd + 35, endY], {
-            stroke: 'green',
+            stroke: 'red',
             strokeWidth: 2,
             customType: 'verticalDisplacementVisualization'
         });
     
         // Create text to show vertical displacement
         const displacementText = new fabric.Text(`dy: ${verticalDisplacement.toFixed(3)} m`, {
-            left: canvasXEnd + 35,
+            left: canvasXEnd + 50,
             top: (startY + endY) / 2,
-            fill: 'green',
+            fill: 'red',
             fontSize: 10,
             originY: 'center',
             customType: 'verticalDisplacementVisualization'
@@ -528,48 +729,17 @@ function simulateTrajectory() {
         canvas.renderAll();
     }
 
-    function calculateTrajectoryResults(velocity, angle, height, xPos) {
-        // Convert angle to radians
-        const radAngle = angle * Math.PI / 180;
-    
-        // Initial velocity components
-        const vx = velocity * Math.cos(radAngle);
-        const vy = velocity * Math.sin(radAngle);
-    
-        // Time to reach ground (using quadratic formula for displacement)
-        const timeOfFlight = (vy + Math.sqrt(vy * vy + 2 * GRAVITY * height)) / GRAVITY;
-    
-        // Horizontal distance
-        const horizontalDistance = xPos + vx * timeOfFlight;
-    
-        // Maximum height
-        const maxHeight = height + (vy * vy) / (2 * GRAVITY);
-    
-        // Final velocity components at ground
-        const finalVx = vx;
-        const finalVy = vy - GRAVITY * timeOfFlight;
-        const finalVelocity = Math.sqrt(finalVx * finalVx + finalVy * finalVy);
-    
-        // Update results in the DOM
-        document.getElementById('finalVelocity').textContent = finalVelocity.toFixed(3);
-        document.getElementById('finalVelocityX').textContent = finalVx.toFixed(3);
-        document.getElementById('finalVelocityY').textContent = finalVy.toFixed(3);
-        document.getElementById('horizontalDistance').textContent = horizontalDistance.toFixed(3);
-        document.getElementById('timeOfFlight').textContent = timeOfFlight.toFixed(3);
-        document.getElementById('maxHeight').textContent = maxHeight.toFixed(3);
-    }
-    
+}
 
-    animate();
+function initializeSimulation() {
+    setupSliderHandlers();
+    initializeVisualizationObjects();
+    VisualizationHelpers.drawGroundLine();
 }
 
 
+initializeSimulation();
 
-
-
-// Initialize simulation on page load
-initializeVisualization();
-drawGroundLine();
 
 // Simulate button click handler
 simulateBtn.addEventListener('click', simulateTrajectory);
