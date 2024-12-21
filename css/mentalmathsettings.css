@@ -146,3 +146,19 @@ input[type="number"] {
 .go-button:hover {
     background: #123666;
 }
+
+button {
+    background-color: #1a4b8c; /* Green background */
+    border: none; /* Remove borders */
+    color: white; /* White text */
+    padding: 5px 10px;
+    text-align: center; /* Center the text */
+    text-decoration: none; /* Remove underline */
+    display: inline-block; /* Make the buttons appear inline */
+    cursor: pointer; /* Add a pointer cursor on hover */
+    border-radius: 8px; /* Rounded corners */
+}
+
+button:hover {
+    background-color: rgb(33, 109, 209); 
+}

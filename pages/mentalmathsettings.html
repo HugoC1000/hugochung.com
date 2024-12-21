@@ -29,6 +29,11 @@
             <div class="range-inputs">
                 Second number: <input type="number" id="add2min" value="1"> to <input type="number" id="add2max" value="12">
             </div>
+            <div class="preset-buttons">
+                <button onclick="setPreset('add', 1)">1 Digit</button>
+                <button onclick="setPreset('add', 2)">2 Digits</button>
+                <button onclick="setPreset('add', 3)">3 Digits</button>
+            </div>
         </div>
 
         <div class="operation-settings">
@@ -38,6 +43,11 @@
             </div>
             <div class="range-inputs">
                 Second number: <input type="number" id="sub2min" value="1"> to <input type="number" id="sub2max" value="12">
+            </div>
+            <div class="preset-buttons">
+                <button onclick="setPreset('sub', 1)">1 Digit</button>
+                <button onclick="setPreset('sub', 2)">2 Digits</button>
+                <button onclick="setPreset('sub', 3)">3 Digits</button>
             </div>
         </div>
 
@@ -49,6 +59,11 @@
             <div class="range-inputs">
                 Second number: <input type="number" id="mul2min" value="1"> to <input type="number" id="mul2max" value="12">
             </div>
+            <div class="preset-buttons">
+                <button onclick="setPreset('mul', 1)">1 Digit</button>
+                <button onclick="setPreset('mul', 2)">2 Digits</button>
+                <button onclick="setPreset('mul', 3)">3 Digits</button>
+            </div>
         </div>
 
         <div class="operation-settings">
@@ -58,6 +73,11 @@
             </div>
             <div class="range-inputs">
                 Second number: <input type="number" id="div2min" value="1"> to <input type="number" id="div2max" value="12">
+            </div>
+            <div class="preset-buttons">
+                <button onclick="setPreset('div', 1)">1 Digit</button>
+                <button onclick="setPreset('div', 2)">2 Digits</button>
+                <button onclick="setPreset('div', 3)">3 Digits</button>
             </div>
         </div>
 
@@ -93,6 +113,15 @@
             }
         };
         localStorage.setItem('mathSettings', JSON.stringify(settings));
+    }
+
+    function setPreset(operation, digits) {
+        const min = Math.pow(10, digits - 1);
+        const max = Math.pow(10, digits) - 1;
+        document.getElementById(`${operation}1min`).value = min;
+        document.getElementById(`${operation}1max`).value = max;
+        document.getElementById(`${operation}2min`).value = min;
+        document.getElementById(`${operation}2max`).value = max;
     }
     </script>
 </body>

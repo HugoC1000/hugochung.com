@@ -130,6 +130,8 @@ const Calculations = {
         const positionY = initialHeight + initialVelocityY * timeOfFlight - 0.5 * GRAVITY * timeOfFlight * timeOfFlight;
         return { x: positionX, y: positionY };
     }
+
+
 };
 
 // Visualization Helpers
