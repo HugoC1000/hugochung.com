@@ -683,14 +683,16 @@ function simulateTrajectory() {
             }
         });
     
-        const ballPosition = Calculations.calculateBallPositionFromTime(initialXPosition, initialHeight, initialVelocity.x, initialVelocity.y, time);
-        const verticalDisplacement = ballPosition.y - initialHeight;
+        const endTime = Calculations.calculateTimeOfFlight(initialVelocity.y, initialHeight);
+        const finalBallPosition = Calculations.calculateBallPositionFromTime(initialXPosition, initialHeight, initialVelocity.x, initialVelocity.y, endTime);
+        const currBallPosition = Calculations.calculateBallPositionFromTime(initialXPosition, initialHeight, initialVelocity.x, initialVelocity.y, time);
+        const verticalDisplacement = currBallPosition.y - initialHeight;
 
-        canvasXEnd = ballPosition.x * 20;
+        canvasXEnd = finalBallPosition.x * 20;
     
         const groundY = canvas.height - 20;
         const startY = groundY - initialHeight * 20;
-        const endY = groundY - ballPosition.y * 20;
+        const endY = groundY - currBallPosition.y * 20;
     
         // Create vertical displacement line
         const displacementLine = new fabric.Line([canvasXEnd + 25, startY, canvasXEnd + 25, endY], {
