@@ -19,6 +19,22 @@ function drawRect(x, y, width, height, color) {
     ctx.fillRect(x, y, width, height);
 }
 
+function drawRoundedRect(x, y, width, height, radius, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+    ctx.fill();
+}
+
 function drawCircle(x, y, radius, color) {
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -34,8 +50,8 @@ function drawText(text, x, y, color, size = '30px') {
 }
 
 function drawButton(text, x, y, width, height, color) {
-    drawRect(x, y, width, height, color);
-    drawText(text, x + width / 2 - ctx.measureText(text).width / 2 + 65, y + height / 2 + 10, 'white', '15px');
+    drawRoundedRect(x, y, width, height, 10, color);
+    drawText(text, x + width / 2 - ctx.measureText(text).width / 2 + 65, y + height / 2 + 5, 'DodgerBlue', '15px');
 }
 
 function resetBall() {
@@ -107,14 +123,14 @@ function update() {
 
     // Draw everything
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawRect(0, 0, canvas.width, canvas.height, 'black');
-    drawRect(player1.x, player1.y, player1.width, player1.height, 'white');
-    drawRect(player2.x, player2.y, player2.width, player2.height, 'white');
+    drawRoundedRect(0, 0, canvas.width, canvas.height, 0, 'black');
+    drawRoundedRect(player1.x, player1.y, player1.width, player1.height, 5, 'white');
+    drawRoundedRect(player2.x, player2.y, player2.width, player2.height, 5, 'white');
     drawCircle(ball.x, ball.y, ball.size / 2, 'white');
     drawText(player1.score, canvas.width / 4, 50, 'white');
     drawText(player2.score, (canvas.width * 3) / 4, 50, 'white');
 
-    drawButton(isSinglePlayer ? 'Switch to Multiplayer' : 'Switch to Single Player', canvas.width - 220, 10, 200, 40, 'gray');
+    drawButton(isSinglePlayer ? 'Switch to Multiplayer' : 'Switch to Single Player', canvas.width - 220, 15, 180, 35, 'white');
 }
 
 function gameLoop() {
