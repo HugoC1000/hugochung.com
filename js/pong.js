@@ -130,7 +130,7 @@ function update() {
     drawText(player1.score, canvas.width / 4, 50, 'white');
     drawText(player2.score, (canvas.width * 3) / 4, 50, 'white');
 
-    drawButton(isSinglePlayer ? 'Switch to Multiplayer' : 'Switch to Single Player', canvas.width - 220, 15, 180, 35, 'white');
+    drawButton(isSinglePlayer ? 'Switch to Multiplayer' : 'Switch to Single Player', canvas.width/2 - 90, 15, 180, 35, 'white');
 }
 
 function gameLoop() {
@@ -174,7 +174,7 @@ canvas.addEventListener('click', (e) => {
     const y = e.clientY - rect.top;
 
     // Check if the button is clicked
-    if (x >= canvas.width - 220 && x <= canvas.width - 20 && y >= 10 && y <= 50) {
+    if (x >= canvas.width/2 - 90 && canvas.width/2 + 90 && y >= 10 && y <= 50) {
         isSinglePlayer = !isSinglePlayer;
     }
 });
