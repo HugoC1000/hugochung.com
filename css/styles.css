@@ -6,6 +6,40 @@
     --secondary-bg: #f5f6fa;
 }
 
+/* Add these animation keyframes at the top of your CSS file */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 body {
     font-family: 'Poppins', sans-serif;
     line-height: 1.6;
@@ -60,6 +94,22 @@ nav a {
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 1px;
+    position: relative;
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background-color: var(--accent-color);
+    transition: width 0.3s ease;
+}
+
+nav a:hover::after {
+    width: 100%;
 }
 
 nav a:hover {
@@ -99,6 +149,8 @@ nav a:hover {
     border-radius: 50%;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
+    animation: popIn 1s ease-out forwards;
+    opacity: 0;
 }
 
 .hero-image img:hover {
@@ -135,6 +187,7 @@ nav a:hover {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+
 .cta-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(9, 132, 227, 0.3);
@@ -144,6 +197,8 @@ nav a:hover {
 .about {
     padding: 6rem 0;
     background: var(--secondary-bg);
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
 }
 
 .about h2 {
@@ -164,6 +219,8 @@ nav a:hover {
     background: var(--primary-color);
     color: white;
     text-align: center;
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
 }
 
 .tools-section h2 {
@@ -190,6 +247,8 @@ nav a:hover {
 .contact {
     padding: 6rem 0;
     background: var(--bg-color);
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
 }
 
 .contact h2 {
@@ -280,4 +339,24 @@ nav a:hover {
     .contact-form {
         width: 100%;
     }
+}
+
+.hero-text h1 {
+    animation: fadeInRight 0.8s ease-out forwards;
+    opacity: 0;
+}
+
+.hero-text .title {
+    animation: fadeInRight 0.8s ease-out 0.2s forwards;
+    opacity: 0;
+}
+
+.hero-text .tagline {
+    animation: fadeInRight 0.8s ease-out 0.4s forwards;
+    opacity: 0;
+}
+
+.hero-text .cta-button {
+    animation: fadeInRight 0.8s ease-out 0.6s forwards;
+    opacity: 0;
 }
