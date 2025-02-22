@@ -100,8 +100,8 @@ nav a:hover {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     display: flex;
     gap: 30px;
-    height: 80vh; /* Set a viewport-relative height */
-    min-height: 500px;
+    min-height: 80vh;
+    height: fit-content; 
 }
 
 .form-container, .result-container, .progress-bar-container {
@@ -110,7 +110,8 @@ nav a:hover {
 
 .form-container {
     flex: 2; /* Take up more space */
-    padding-right: 20px;
+    padding-right: 40px;
+    overflow-y: auto; /* Enable scrolling if content overflows */
 }
 
 h1 {
@@ -185,12 +186,14 @@ button:hover {
 
 @media (max-width: 768px) {
     .main-container {
+        min-height: calc(100vh - 130px);
         height: auto;
         flex-direction: column;
-        min-height: calc(100vh - 130px);
     }
     .form-container {
         padding-right: 0;
+        max-height: none;
+        overflow-y: visible;
     }
     .result-container {
         margin-bottom: 20px;
@@ -200,6 +203,7 @@ button:hover {
         width: 100%;
         height: 30px; /* Fixed height for mobile */
         margin: 20px 0;
+        min-height: 30px; /* Reset for mobile */
     }
     .progress-bar, .progress-bar-background {
         width: 100%;
@@ -209,9 +213,8 @@ button:hover {
 
 .progress-bar-container {
     flex: 0 0 50px; /* Don't grow or shrink, stay at 50px width */
-    height: 100%; /* Take full height of parent */
     position: relative;
-    margin: auto 0; /* Center vertically */
+    min-height: 400px; /* Ensure minimum height */
 }
 
 .progress-bar-background {
@@ -528,6 +531,7 @@ h3 {
         flex: 0 0 30px;
         width: 100%;
         height: 30px;
+        min-height: 30px; /* Reset for mobile */
         margin: 20px 0;
     }
     
@@ -592,4 +596,23 @@ h3 {
 .remove-course-btn:hover {
     color: white;
     background-color: #ff6b6b;
+}
+
+/* Add smooth scrollbar styling */
+.form-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.form-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.form-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.form-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
