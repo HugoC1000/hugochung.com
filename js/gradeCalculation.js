@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const subjects = [
         "math",
-        "english", "pe"
+        "english"
     ];
 
     let courseCount = 3;
@@ -129,9 +129,11 @@ document.addEventListener("DOMContentLoaded", () => {
         for (const subject of subjects) {
             const minInput = document.getElementById(`${subject}-min`);
             const maxInput = document.getElementById(`${subject}-max`);
-            const minValue = parseFloat(minInput.value) || 0;
-            const maxValue = parseFloat(maxInput.value) || 0;
-
+            
+            // Handle null inputs gracefully
+            const minValue = minInput ? (parseFloat(minInput.value) || 0) : 0;
+            const maxValue = maxInput ? (parseFloat(maxInput.value) || 0) : 0;
+    
             minTotal += minValue;
             maxTotal += maxValue;
         }
