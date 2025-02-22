@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     const subjects = [
-        "apCsp",
-        "math", "physics", "socials", 
-        "pe", "english", "chemistry", "career", "apStats"
+        "math",
+        "english", "pe", "elective1", 
+        "elective2", "elective3", "elective4", "elective5", "elective6"
     ];
 
 
@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
             input.addEventListener("input", (e) => {
                 validateMinMaxInputs(subject);
                 updateGradeColor(e.target);
+                const confidence = updateConfidence(subject); // Get confidence level
                 updateResults();
             });
         });
@@ -74,24 +75,51 @@ document.addEventListener("DOMContentLoaded", () => {
         const max = parseFloat(maxInput.value) || 0;
         
     }
+    
+    
+    function updateConfidence(subject) {
+        const minInput = document.getElementById(`${subject}-min`);
+        const maxInput = document.getElementById(`${subject}-max`);
+        const confidenceIndicator = document.querySelector(`.confidence-indicator[data-for="${subject}"]`);
+        
+        if (!minInput || !maxInput || !confidenceIndicator) {
+            console.error(`Missing elements for subject: ${subject}`);
+            return;
+        }
+        
+        const min = parseFloat(minInput.value) || 0;
+        const max = parseFloat(maxInput.value) || 0;
+        
+        const range = max - min;
 
-     // Add event listeners for confidence selects
-     const confidenceSelects = document.querySelectorAll('.confidence-select');
-     confidenceSelects.forEach(select => {
-         select.addEventListener('change', (e) => {
-             // Remove existing classes from the select itself
-             e.target.classList.remove('confidence-unsure', 'confidence-moderate', 'confidence-certain');
-             
-             // Add new confidence class to the select
-             e.target.classList.add(`confidence-${e.target.value}`);
-             
-             // Set the background color directly
-             e.target.style.backgroundColor = 
-                 e.target.value === 'unsure' ? '#eb3737' :
-                 e.target.value === 'moderate' ? '#e39d53' : 
-                 e.target.value === 'certain' ? '#38ed38' : '';
-         });
-     });
+        const normalizedRange = Math.min(range, 10) / 7; // Cap at 10% range
+        
+        // Use cubic scaling for more dramatic color transition
+        const scaledRange = Math.pow(normalizedRange, 4); 
+        
+        // Green is highest when range is smallest
+        const green = Math.floor(255 * (1 - scaledRange));
+        // Red increases as range increases
+        const red = Math.floor(255 * scaledRange);
+        const blue = 0;
+        
+        confidenceIndicator.style.color = `rgb(${red}, ${green}, ${blue})`;
+        
+        if (range === 0) {
+            confidenceIndicator.textContent = 'Exact';
+        } else if(range <= 3){
+            confidenceIndicator.textContent = `Certain ±${(range/2).toFixed(1)}%`;
+        }else if(range <= 7){
+            confidenceIndicator.textContent = `Maybe ±${(range/2).toFixed(1)}%`;
+        }else{
+            confidenceIndicator.textContent = `Unsure ±${(range/2).toFixed(1)}%`;
+        }
+        
+        if (range <= 3) return 'certain';
+        if (range <= 7) return 'moderate';
+        return 'unsure';
+    }
+
     function updateResults() {
         let minTotal = 0;
         let maxTotal = 0;
@@ -99,30 +127,11 @@ document.addEventListener("DOMContentLoaded", () => {
         for (const subject of subjects) {
             const minInput = document.getElementById(`${subject}-min`);
             const maxInput = document.getElementById(`${subject}-max`);
-            const confidence = document.querySelector(`.confidence-select[data-for="${subject}"]`).value;
-            
             const minValue = parseFloat(minInput.value) || 0;
             const maxValue = parseFloat(maxInput.value) || 0;
-    
-            if (minValue >= 0 && maxValue <= 100) {
-                switch(confidence) {
-                    case 'certain':
-                        minTotal += maxValue;
-                        maxTotal += maxValue;
-                        break;
-                    case 'moderate':
-                        minTotal += minValue;
-                        maxTotal += maxValue;
-                        break;
-                    case 'unsure':
-                        minTotal += Math.max(0, minValue - 5);
-                        maxTotal += Math.min(100, maxValue + 5);
-                        break;
-                    default:
-                        minTotal += minValue;
-                        maxTotal += maxValue;
-                }
-            }
+
+            minTotal += minValue;
+            maxTotal += maxValue;
         }
     
         const minPercentage = ((minTotal / maxPoints) * 100).toFixed(2);
@@ -145,7 +154,6 @@ document.addEventListener("DOMContentLoaded", () => {
             outputElement.innerHTML += `<p class="fail">You're unlikely to meet your goal with current grades.</p>`;
         }
     
-        // Fix: Call updateProgressBar instead of updateProgressBars
         updateProgressBar(minTotal, maxTotal); // Update progress bar with minimum total
     }
 
