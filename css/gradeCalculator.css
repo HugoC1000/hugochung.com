@@ -100,7 +100,6 @@ nav a:hover {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     display: flex;
     gap: 30px;
-    height: 1000px;
     padding-top: 30px;
 }
 
