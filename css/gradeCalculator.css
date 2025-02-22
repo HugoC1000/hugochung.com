@@ -547,7 +547,7 @@ h3 {
 }
 
 .add-course-btn:hover {
-    background-color: var(--accent-color-dark);
+    background-color: #272648;
 }
 
 .remove-course-btn {
