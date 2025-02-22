@@ -533,3 +533,41 @@ h3 {
     font-size: 12px;
     white-space: nowrap;
 }
+
+.add-course-btn {
+    width: 100%;
+    padding: 1rem;
+    margin-top: 1rem;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-course-btn:hover {
+    background-color: var(--accent-color-dark);
+}
+
+.remove-course-btn {
+    background: none;
+    border: none;
+    color: #ff6b6b;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.2rem;
+    transition: all 0.3s ease;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+.remove-course-btn:hover {
+    color: white;
+    background-color: #ff6b6b;
+}

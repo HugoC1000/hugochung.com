@@ -1,13 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
     const subjects = [
         "math",
-        "english", "pe", "elective1", 
-        "elective2", "elective3", "elective4", "elective5", "elective6"
+        "english", "pe"
     ];
 
+    let courseCount = 3;
 
-    let goal = document.getElementById("targetGrade").value/100*900 || 0; 
-    const maxPoints = 900;
+
+
+    let goal = document.getElementById("targetGrade").value/100*courseCount || 0; 
 
     // Update event listeners for min/max inputs
     subjects.forEach(subject => {
@@ -62,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     document.getElementById("targetGrade").addEventListener("input", (e) => {
-        goal = e.target.value/100*900 || 0;
+        goal = e.target.value/100*courseCount || 0;
         updateResults();
     });
   
@@ -92,10 +93,10 @@ document.addEventListener("DOMContentLoaded", () => {
         
         const range = max - min;
 
-        const normalizedRange = Math.min(range, 10) / 7; // Cap at 10% range
+        const normalizedRange = Math.min(range, 10) / 6; // Cap at 10% range
         
         // Use cubic scaling for more dramatic color transition
-        const scaledRange = Math.pow(normalizedRange, 4); 
+        const scaledRange = Math.pow(normalizedRange, 2); 
         
         // Green is highest when range is smallest
         const green = Math.floor(255 * (1 - scaledRange));
@@ -107,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if (range === 0) {
             confidenceIndicator.textContent = 'Exact';
-        } else if(range <= 3){
+        } else if(range < 3){
             confidenceIndicator.textContent = `Certain ±${(range/2).toFixed(1)}%`;
         }else if(range <= 7){
             confidenceIndicator.textContent = `Maybe ±${(range/2).toFixed(1)}%`;
@@ -123,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateResults() {
         let minTotal = 0;
         let maxTotal = 0;
+        let totalPoints = courseCount * 100;
     
         for (const subject of subjects) {
             const minInput = document.getElementById(`${subject}-min`);
@@ -134,16 +136,16 @@ document.addEventListener("DOMContentLoaded", () => {
             maxTotal += maxValue;
         }
     
-        const minPercentage = ((minTotal / maxPoints) * 100).toFixed(2);
-        const maxPercentage = ((maxTotal / maxPoints) * 100).toFixed(2);
-        const goal = parseFloat(document.getElementById("targetGrade").value)/100*900 || 0;
-        const targetPercentage = ((goal / maxPoints) * 100).toFixed(2);
+        const minPercentage = ((minTotal / totalPoints) * 100).toFixed(2);
+        const maxPercentage = ((maxTotal / totalPoints) * 100).toFixed(2);
+        const goal = (parseFloat(document.getElementById("targetGrade").value)/100*courseCount * 100).toFixed(2) || 0;
+        const targetPercentage = ((goal / totalPoints) * 100).toFixed(2);
     
         const outputElement = document.getElementById("output");
         outputElement.innerHTML = `
-            <p>Minimum: ${minTotal}/${maxPoints} (${minPercentage}%)</p>
-            <p>Maximum: ${maxTotal}/${maxPoints} (${maxPercentage}%)</p>
-            <p>Target: ${goal}/${maxPoints} (${targetPercentage}%)</p>
+            <p>Minimum: ${minTotal}/${totalPoints} (${minPercentage}%)</p>
+            <p>Maximum: ${maxTotal}/${totalPoints} (${maxPercentage}%)</p>
+            <p>Target: ${goal}/${totalPoints} (${targetPercentage}%)</p>
         `;
     
         if (minTotal >= goal) {
@@ -154,26 +156,28 @@ document.addEventListener("DOMContentLoaded", () => {
             outputElement.innerHTML += `<p class="fail">You're unlikely to meet your goal with current grades.</p>`;
         }
     
-        updateProgressBar(minTotal, maxTotal); // Update progress bar with minimum total
+        updateProgressBar(minTotal, maxTotal); 
     }
 
-    // Function to update the progress bar
+
     function updateProgressBar(minTotal, maxTotal) {
+        let totalPoints = courseCount * 100;
+
         const progressBarMin = document.getElementById("progressBarMin");
         const progressBarMax = document.getElementById("progressBarMax");
         const thresholdMarker = document.getElementById("thresholdMarker");
         
         // Calculate percentages (capped at 100%)
-        const minHeight = Math.min(100, (minTotal / maxPoints) * 100);
-        const maxHeight = Math.min(100, (maxTotal / maxPoints) * 100);
+        const minHeight = Math.min(100, (minTotal / totalPoints) * 100);
+        const maxHeight = Math.min(100, (maxTotal / totalPoints) * 100);
         
         // Update the bars
         progressBarMin.style.height = `${minHeight}%`;
         progressBarMax.style.height = `${maxHeight}%`;
         
         // Update threshold marker
-        const goal = parseFloat(document.getElementById("targetGrade").value)/100*900 || 0;
-        const thresholdPosition = Math.min(100, (goal / maxPoints) * 100);
+        const goal = parseFloat(document.getElementById("targetGrade").value)/100*courseCount*100 || 0;
+        const thresholdPosition = Math.min(100, (goal / totalPoints) * 100);
         thresholdMarker.style.bottom = `${thresholdPosition}%`;
     }
     
@@ -198,7 +202,87 @@ document.addEventListener("DOMContentLoaded", () => {
             input.style.background = `rgb(${red}, ${green}, 0)`;
         }
         
-        // Adjust text color for readability
         input.style.color = value >= 60 && value <= 75 ? 'white' : 'black';
+    }
+
+    const addCourseBtn = document.getElementById('addCourseBtn');
+    const dynamicCourses = document.getElementById('dynamicCourses');
+
+    addCourseBtn.addEventListener('click', () => {
+        courseCount++;
+        const courseId = `elective${courseCount}`;
+        
+        const courseHTML = `
+            <div class="grade-input-container" id="${courseId}-container">
+                <div class="course-name-container">
+                    <label class="course-label" for="${courseId}">Course ${courseCount}</label>
+                    <button type="button" class="edit-name-btn">✎</button>
+                    <input type="text" class="course-name-input" style="display: none;">
+                    <button type="button" class="remove-course-btn">×</button>
+                </div>
+                <div class="input-with-confidence">
+                    <div class="min-max-inputs">
+                        <input type="number" id="${courseId}-min" class="grade-input min-input" placeholder="Min score">
+                        <input type="number" id="${courseId}-max" class="grade-input max-input" placeholder="Max score">
+                    </div>
+                    <div class="confidence-indicator" data-for="${courseId}"></div>
+                </div>
+            </div>
+        `;
+        
+        dynamicCourses.insertAdjacentHTML('beforeend', courseHTML);
+        
+        // Add event listeners for the new course
+        const newContainer = document.getElementById(`${courseId}-container`);
+        
+
+        const removeBtn = newContainer.querySelector('.remove-course-btn');
+        removeBtn.addEventListener('click', () => {
+            newContainer.remove();
+            courseCount--;
+            updateResults();
+        });
+        
+        // Add edit name listener
+        const editBtn = newContainer.querySelector('.edit-name-btn');
+        const label = newContainer.querySelector('.course-label');
+        const input = newContainer.querySelector('.course-name-input');
+        
+        editBtn.addEventListener('click', handleEditClick);
+        
+        // Add min/max input listeners
+        const minInput = document.getElementById(`${courseId}-min`);
+        const maxInput = document.getElementById(`${courseId}-max`);
+        
+        [minInput, maxInput].forEach(input => {
+            input.addEventListener("input", (e) => {
+                validateMinMaxInputs(courseId);
+                updateGradeColor(e.target);
+                updateConfidence(courseId);
+                updateResults();
+            });
+        });
+        
+
+        subjects.push(courseId);
+    });
+
+    function handleEditClick(e) {
+        const container = e.target.closest('.course-name-container');
+        const label = container.querySelector('.course-label');
+        const input = container.querySelector('.course-name-input');
+        
+        if (input.style.display === 'none') {
+            input.value = label.textContent;
+            label.style.display = 'none';
+            input.style.display = 'inline-block';
+            e.target.textContent = '✓';
+            input.focus();
+        } else {
+            label.textContent = input.value;
+            label.style.display = 'inline-block';
+            input.style.display = 'none';
+            e.target.textContent = '✎';
+        }
     }
 });

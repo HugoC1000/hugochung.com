@@ -27,144 +27,62 @@
             <input type="number" id="targetGrade" placeholder="Enter target points" min="0" max="100">
         </div>
 
-
-        <div class="grade-input-container">
-            <div class="course-name-container">
-                <label class="course-label" for="math">Math</label>
-                <button type="button" class="edit-name-btn">✎</button>
-                <input type="text" class="course-name-input" style="display: none;">
-            </div>
-            <div class="input-with-confidence">
-                <div class="min-max-inputs">
-                    <input type="number" id="math-min" class="grade-input min-input" placeholder="Min score">
-                    <input type="number" id="math-max" class="grade-input max-input" placeholder="Max score">
+        <!-- Default courses container -->
+        <div id="defaultCourses">
+            <!-- Math course -->
+            <div class="grade-input-container">
+                <div class="course-name-container">
+                    <label class="course-label" for="math">Math</label>
+                    <button type="button" class="edit-name-btn">✎</button>
+                    <input type="text" class="course-name-input" style="display: none;">
                 </div>
-                <div class="confidence-indicator" data-for="math"></div>
-            </div>
-        </div>
-        
-
-
-        <div class="grade-input-container">
-            <div class="course-name-container">
-                <label class="course-label" for="english">English</label>
-                <button type="button" class="edit-name-btn">✎</button>
-                <input type="text" class="course-name-input" style="display: none;">
-            </div>
-            <div class="input-with-confidence">
-                <div class="min-max-inputs">
-                    <input type="number" id="english-min" class="grade-input min-input" placeholder="Min score">
-                    <input type="number" id="english-max" class="grade-input max-input" placeholder="Max score">
+                <div class="input-with-confidence">
+                    <div class="min-max-inputs">
+                        <input type="number" id="math-min" class="grade-input min-input" placeholder="Min score">
+                        <input type="number" id="math-max" class="grade-input max-input" placeholder="Max score">
+                    </div>
+                    <div class="confidence-indicator" data-for="math"></div>
                 </div>
-                <div class="confidence-indicator" data-for="english"></div>
             </div>
-        </div>
-        <div class="grade-input-container">
-            <div class="course-name-container">
-                <label class="course-label" for="pe">PE</label>
-                <button type="button" class="edit-name-btn">✎</button>
-                <input type="text" class="course-name-input" style="display: none;">
-            </div>
-            <div class="input-with-confidence">
-                <div class="min-max-inputs">
-                    <input type="number" id="pe-min" class="grade-input min-input" placeholder="Min score">
-                    <input type="number" id="pe-max" class="grade-input max-input" placeholder="Max score">
-                </div>
-                <div class="confidence-indicator" data-for="pe"></div>
-            </div>
-        </div>
 
-        <div class="grade-input-container">
-            <div class="course-name-container">
-                <label class="course-label" for="elective1">Elective 1</label>
-                <button type="button" class="edit-name-btn">✎</button>
-                <input type="text" class="course-name-input" style="display: none;">
-            </div>
-            <div class="input-with-confidence">
-                <div class="min-max-inputs">
-                    <input type="number" id="elective1-min" class="grade-input min-input" placeholder="Min score">
-                    <input type="number" id="elective1-max" class="grade-input max-input" placeholder="Max score">
+            <!-- English course -->
+            <div class="grade-input-container">
+                <div class="course-name-container">
+                    <label class="course-label" for="english">English</label>
+                    <button type="button" class="edit-name-btn">✎</button>
+                    <input type="text" class="course-name-input" style="display: none;">
                 </div>
-                <div class="confidence-indicator" data-for="elective1"></div>
+                <div class="input-with-confidence">
+                    <div class="min-max-inputs">
+                        <input type="number" id="english-min" class="grade-input min-input" placeholder="Min score">
+                        <input type="number" id="english-max" class="grade-input max-input" placeholder="Max score">
+                    </div>
+                    <div class="confidence-indicator" data-for="english"></div>
+                </div>
+            </div>
+
+            <!-- PE course -->
+            <div class="grade-input-container">
+                <div class="course-name-container">
+                    <label class="course-label" for="pe">PE</label>
+                    <button type="button" class="edit-name-btn">✎</button>
+                    <input type="text" class="course-name-input" style="display: none;">
+                </div>
+                <div class="input-with-confidence">
+                    <div class="min-max-inputs">
+                        <input type="number" id="pe-min" class="grade-input min-input" placeholder="Min score">
+                        <input type="number" id="pe-max" class="grade-input max-input" placeholder="Max score">
+                    </div>
+                    <div class="confidence-indicator" data-for="pe"></div>
+                </div>
             </div>
         </div>
 
-        <div class="grade-input-container">
-            <div class="course-name-container">
-                <label class="course-label" for="elective2">Elective 2</label>
-                <button type="button" class="edit-name-btn">✎</button>
-                <input type="text" class="course-name-input" style="display: none;">
-            </div>
-            <div class="input-with-confidence">
-                <div class="min-max-inputs">
-                    <input type="number" id="elective2-min" class="grade-input min-input" placeholder="Min score">
-                    <input type="number" id="elective2-max" class="grade-input max-input" placeholder="Max score">
-                </div>
-                <div class="confidence-indicator" data-for="elective2"></div>
-            </div>
-        </div>
+        <!-- Dynamic courses container -->
+        <div id="dynamicCourses"></div>
 
-        <div class="grade-input-container">
-            <div class="course-name-container">
-                <label class="course-label" for="elective3">Elective 3</label>
-                <button type="button" class="edit-name-btn">✎</button>
-                <input type="text" class="course-name-input" style="display: none;">
-            </div>
-            <div class="input-with-confidence">
-                <div class="min-max-inputs">
-                    <input type="number" id="elective3-min" class="grade-input min-input" placeholder="Min score">
-                    <input type="number" id="elective3-max" class="grade-input max-input" placeholder="Max score">
-                </div>
-                <div class="confidence-indicator" data-for="elective3"></div>
-            </div>
-        </div>
-
-        <div class="grade-input-container">
-            <div class="course-name-container">
-                <label class="course-label" for="elective4">Elective 4</label>
-                <button type="button" class="edit-name-btn">✎</button>
-                <input type="text" class="course-name-input" style="display: none;">
-            </div>
-            <div class="input-with-confidence">
-                <div class="min-max-inputs">
-                    <input type="number" id="elective4-min" class="grade-input min-input" placeholder="Min score">
-                    <input type="number" id="elective4-max" class="grade-input max-input" placeholder="Max score">
-                </div>
-                <div class="confidence-indicator" data-for="elective4"></div>
-            </div>
-        </div>
-
-        <div class="grade-input-container">
-            <div class="course-name-container">
-                <label class="course-label" for="elective5">Elective 5</label>
-                <button type="button" class="edit-name-btn">✎</button>
-                <input type="text" class="course-name-input" style="display: none;">
-            </div>
-            <div class="input-with-confidence">
-                <div class="min-max-inputs">
-                    <input type="number" id="elective5-min" class="grade-input min-input" placeholder="Min score">
-                    <input type="number" id="elective5-max" class="grade-input max-input" placeholder="Max score">
-                </div>
-                <div class="confidence-indicator" data-for="elective5"></div>
-            </div>
-        </div>
-
-        <div class="grade-input-container">
-            <div class="course-name-container">
-                <label class="course-label" for="elective6">Elective 6</label>
-                <button type="button" class="edit-name-btn">✎</button>
-                <input type="text" class="course-name-input" style="display: none;">
-            </div>
-            <div class="input-with-confidence">
-                <div class="min-max-inputs">
-                    <input type="number" id="elective6-min" class="grade-input min-input" placeholder="Min score">
-                    <input type="number" id="elective6-max" class="grade-input max-input" placeholder="Max score">
-                </div>
-                <div class="confidence-indicator" data-for="elective6"></div>
-            </div>
-        </div>
-
-
+        <!-- Add course button -->
+        <button type="button" id="addCourseBtn" class="add-course-btn">+ Add Course</button>
       </form>
     </div>
 
