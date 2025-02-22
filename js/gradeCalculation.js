@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "english"
     ];
 
-    let courseCount = 3;
+    let courseCount = 2;
 
 
 
@@ -137,6 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
             minTotal += minValue;
             maxTotal += maxValue;
         }
+
     
         const minPercentage = ((minTotal / totalPoints) * 100).toFixed(2);
         const maxPercentage = ((maxTotal / totalPoints) * 100).toFixed(2);
